@@ -14,6 +14,6 @@ public class CreateUserUseCase {
   }
 
   public User create(User user) {
-    return user;
+    return this.repository.save(user);
   }
 }
