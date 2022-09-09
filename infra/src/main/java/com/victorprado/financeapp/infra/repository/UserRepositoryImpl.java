@@ -7,11 +7,11 @@ import com.victorprado.financeapp.infra.model.UserModel;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class UserPostgresRepositoryImpl implements UserRepository {
+public class UserRepositoryImpl implements UserRepository {
 
   private final UserPostgresRepository repository;
 
-  public UserPostgresRepositoryImpl(UserPostgresRepository repository) {
+  public UserRepositoryImpl(UserPostgresRepository repository) {
     this.repository = repository;
   }
 
@@ -19,7 +19,7 @@ public class UserPostgresRepositoryImpl implements UserRepository {
   public User save(User user) throws DatabaseException {
     try {
       log.info("transforming new user {}", user.getEmail());
-      UserModel userModel = new UserModel();
+      UserModel userModel = new UserModel(user);
       log.info("persisting new user {} into database", user.getEmail());
       UserModel savedUser = repository.save(userModel);
       log.info("new user {} created", userModel.getId());

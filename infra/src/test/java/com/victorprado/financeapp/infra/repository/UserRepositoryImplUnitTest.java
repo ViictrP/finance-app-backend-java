@@ -12,10 +12,10 @@ import com.victorprado.financeapp.infra.model.UserModel;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-class UserPostgresRepositoryImplUnitTest {
+class UserRepositoryImplUnitTest {
 
   final UserPostgresRepository repository = Mockito.mock(UserPostgresRepository.class);
-  final UserPostgresRepositoryImpl repositoryImpl = new UserPostgresRepositoryImpl(repository);
+  final UserRepositoryImpl repositoryImpl = new UserRepositoryImpl(repository);
 
   @Test
   void given_valid_user_when_persisting_then_return_persisted_user() {
@@ -40,8 +40,10 @@ class UserPostgresRepositoryImplUnitTest {
   }
 
   public static UserModel getUserModel() {
-    return UserModel.builder()
-      .id("1iuhufwuy34")
+    var user = UserModel.builder()
+      .name("User")
       .build();
+    user.setId("UAHSDIGIU");
+    return user;
   }
 }

@@ -3,6 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:15432/finance-app-db
+    url: jdbc:postgresql://localhost:15432/finance-app-database?schema=finance-app
     username: postgres
     password: postgres
+
+  liquibase:
+    default-schema: finance-app

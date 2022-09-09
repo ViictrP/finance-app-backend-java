@@ -2,7 +2,7 @@ package com.victorprado.financeapp.config.repository;
 
 import com.victorprado.financeapp.core.repositories.UserRepository;
 import com.victorprado.financeapp.infra.repository.UserPostgresRepository;
-import com.victorprado.financeapp.infra.repository.UserPostgresRepositoryImpl;
+import com.victorprado.financeapp.infra.repository.UserRepositoryImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,6 +17,6 @@ public class RepositoryConfig {
 
   @Bean
   public UserRepository userRepository() {
-    return new UserPostgresRepositoryImpl(userPostgresRepository);
+    return new UserRepositoryImpl(userPostgresRepository);
   }
 }
