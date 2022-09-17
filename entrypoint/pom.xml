@@ -12,4 +12,11 @@
 	<artifactId>entrypoint</artifactId>
 	<description>Entrypoint module</description>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.victorprado.financeapp</groupId>
+			<artifactId>core</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 </project>

@@ -12,4 +12,49 @@
 	<artifactId>config</artifactId>
 	<description>Configuration module</description>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.victorprado.financeapp</groupId>
+			<artifactId>core</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.victorprado.financeapp</groupId>
+			<artifactId>infra</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.victorprado.financeapp</groupId>
+			<artifactId>entrypoint</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>br.com.victorprado.financeapp.config.Application
+					</mainClass>
+					<profiles>
+						<profile>local</profile>
+					</profiles>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>build-info</goal>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<finalName>financeapp-spring</finalName>
+							<classifier>${version}</classifier>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

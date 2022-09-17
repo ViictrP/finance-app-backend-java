@@ -1,0 +1,230 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 1
+      author: Victor
+      liquibaseSchemaName: finance-app
+      changes:
+        - createTable:
+            tableName: finance_app_user
+            columns:
+              - column:
+                  name: id
+                  type: varchar(255)
+                  autoIncrement: false
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: lastname
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: Boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: salary
+                  type: Decimal
+
+        - createTable:
+            tableName: credit_card
+            columns:
+              - column:
+                  name: id
+                  type: varchar(255)
+                  autoIncrement: false
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_finance_app_user_id_credit_card
+                    referencedColumnNames: id
+                    referencedTableName: finance_app_user
+                    onDelete: RESTRICT
+                    onUpdate: RESTRICT
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: invoice_closing_day
+                  type: Integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: background_color
+                  type: varchar(255)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: invoice
+            columns:
+              - column:
+                  name: id
+                  type: varchar(255)
+                  autoIncrement: false
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: credit_card_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_credit_card_id_invoice
+                    referencedColumnNames: id
+                    referencedTableName: credit_card
+                    onDelete: RESTRICT
+                    onUpdate: RESTRICT
+              - column:
+                  name: is_closed
+                  type: Boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: year
+                  type: Integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: month
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: transaction
+            columns:
+              - column:
+                  name: id
+                  type: varchar(255)
+                  autoIncrement: false
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: invoice_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_invoice_id_transaction
+                    referencedColumnNames: id
+                    referencedTableName: invoice
+                    onDelete: RESTRICT
+                    onUpdate: RESTRICT
+              - column:
+                  name: user_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_finance_app_user_id_transaction
+                    referencedColumnNames: id
+                    referencedTableName: finance_app_user
+                    onDelete: RESTRICT
+                    onUpdate: RESTRICT
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: Decimal
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_installment
+                  type: Boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: installment_amount
+                  type: Integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: installment_number
+                  type: Integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            catalogName: cat
+            columnNames: number, user_id
+            constraintName: unique_number_finance_app_user_id_credit_card
+            initiallyDeferred: true
+            schemaName: finance-app
+            tableName: credit_card
+            validate: true
+
+        - addUniqueConstraint:
+            catalogName: cat
+            columnNames: month, year, credit_card_id
+            constraintName: unique_month_year_invoice_credit_card
+            initiallyDeferred: true
+            schemaName: finance-app
+            tableName: invoice
+            validate: true
