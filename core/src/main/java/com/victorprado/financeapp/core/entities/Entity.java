@@ -1,5 +1,6 @@
 package com.victorprado.financeapp.core.entities;
 
+import com.victorprado.financeapp.core.validators.EntityValidator;
 import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,5 +16,9 @@ public abstract class Entity {
 
   public void audit() {
     this.createdAt = LocalDateTime.now();
+  }
+
+  public boolean validate() {
+    return EntityValidator.validate(this);
   }
 }

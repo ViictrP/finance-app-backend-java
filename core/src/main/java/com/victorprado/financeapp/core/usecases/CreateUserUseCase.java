@@ -19,7 +19,7 @@ public class CreateUserUseCase {
 
   public User create(User user) throws CoreException {
     log.info("validating user {}", user.getEmail());
-    boolean valid = EntityValidator.validate(user);
+    boolean valid = user.validate();
     if (!valid) {
       log.info("User has invalid data {}", user.getEmail());
       throw new InvalidDataException("User has invalid data");
