@@ -1,8 +1,8 @@
-FROM openjdk:18-slim
+FROM maven:3-eclipse-temurin-18-alpine
 RUN mkdir /opt/app
 WORKDIR /opt/app
 COPY ./ .
-RUN ./mvnw install
+RUN mvn install
 
 ENV PORT=$PORT
 ENV DATABASE_URL=$DATABASE_URL
