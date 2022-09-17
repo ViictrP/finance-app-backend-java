@@ -36,7 +36,8 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>br.com.victorprado.financeapp.config.Application
+					<mainClass>
+						com.victorprado.financeapp.config.Application
 					</mainClass>
 					<profiles>
 						<profile>local</profile>

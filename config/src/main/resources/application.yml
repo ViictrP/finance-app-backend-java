@@ -7,13 +7,14 @@ spring:
       ddl-auto: validate
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: ${DATABASE_URL}
+    url: jdbc:postgresql://${DATABASE_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 30
       minimum-idle: 10
+      schema: finance-app
 
 liquibase:
   contexts: local
