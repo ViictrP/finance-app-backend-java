@@ -21,10 +21,10 @@ public class CreateUserUseCase {
     log.info("validating user {}", user.getEmail());
     boolean valid = user.validate();
     if (!valid) {
-      log.info("User has invalid data {}", user.getEmail());
+      log.info("User has invalid data " + user.getEmail());
       throw new InvalidDataException("User has invalid data");
     }
-    log.info("encrypting user's password. {}", user.getEmail());
+    log.info("encrypting user's password." + user.getEmail());
     user.setPassword(PasswordEncoder.encode(user.getPassword()));
     log.info("persisting new user {}", user.getEmail());
     return this.repository.save(user);
