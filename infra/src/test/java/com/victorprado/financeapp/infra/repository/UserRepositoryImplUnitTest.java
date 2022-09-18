@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import com.victorprado.financeapp.core.entities.User;
 import com.victorprado.financeapp.core.exceptions.DatabaseException;
+import com.victorprado.financeapp.infra.mapper.UserEntityModelMapper;
 import com.victorprado.financeapp.infra.model.UserModel;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,11 +16,13 @@ import org.mockito.Mockito;
 class UserRepositoryImplUnitTest {
 
   final UserPostgresRepository repository = Mockito.mock(UserPostgresRepository.class);
-  final UserRepositoryImpl repositoryImpl = new UserRepositoryImpl(repository);
+  final UserEntityModelMapper mapper = Mockito.mock(UserEntityModelMapper.class);
+  final UserRepositoryImpl repositoryImpl = new UserRepositoryImpl(repository, mapper);
 
   @Test
   void given_valid_user_when_persisting_then_return_persisted_user() {
     given(repository.save(any(UserModel.class))).willReturn(getUserModel());
+    given(mapper.toModel(any(User.class))).willReturn(getUserModel());
 
     User user = User.builder().build();
     repositoryImpl.save(user);
@@ -31,6 +34,7 @@ class UserRepositoryImplUnitTest {
   @Test
   void given_valid_user_when_persisting_then_throw_DatabaseException() {
     given(repository.save(any(UserModel.class))).willThrow(DatabaseException.class);
+    given(mapper.toModel(any(User.class))).willReturn(getUserModel());
 
     User user = User.builder().build();
     thenExceptionOfType(DatabaseException.class)
