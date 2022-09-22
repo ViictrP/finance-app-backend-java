@@ -17,5 +17,6 @@ spring:
       schema: finance_app
 
 liquibase:
+  default-schema: finance_app
   contexts: local
   enabled: false
