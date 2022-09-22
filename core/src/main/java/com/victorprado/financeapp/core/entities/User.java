@@ -24,7 +24,7 @@ public class User extends Entity {
   private String name;
 
   @NotBlank(message = "Lastname must be provided")
-  private String lastName;
+  private String lastname;
 
   @Email(message = "Email should be valid")
   @Include

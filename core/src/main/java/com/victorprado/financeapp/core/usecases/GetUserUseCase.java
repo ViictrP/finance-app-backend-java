@@ -19,7 +19,7 @@ public class GetUserUseCase {
     try {
       log.info("getting user by id {}", userId);
       User user = this.repository.getById(userId);
-      log.info("user {} {} found!", user.getName(), user.getLastName());
+      log.info("user {} {} found!", user.getName(), user.getLastname());
       return user;
     } catch (DatabaseException exception) {
       log.error(exception.getMessage());

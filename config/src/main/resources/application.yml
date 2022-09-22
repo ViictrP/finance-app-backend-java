@@ -14,7 +14,7 @@ spring:
     hikari:
       maximum-pool-size: 30
       minimum-idle: 10
-      schema: finance-app
+      schema: finance_app
 
 liquibase:
   contexts: local

@@ -3,7 +3,7 @@ databaseChangeLog:
   - changeSet:
       id: 1
       author: Victor
-      liquibaseSchemaName: finance-app
+      liquibaseSchemaName: finance_app
       changes:
         - createTable:
             tableName: finance_app_user
@@ -216,7 +216,7 @@ databaseChangeLog:
             columnNames: number, user_id
             constraintName: unique_number_finance_app_user_id_credit_card
             initiallyDeferred: true
-            schemaName: finance-app
+            schemaName: finance_app
             tableName: credit_card
             validate: true
 
@@ -225,6 +225,6 @@ databaseChangeLog:
             columnNames: month, year, credit_card_id
             constraintName: unique_month_year_invoice_credit_card
             initiallyDeferred: true
-            schemaName: finance-app
+            schemaName: finance_app
             tableName: invoice
             validate: true

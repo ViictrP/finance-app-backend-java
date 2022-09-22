@@ -10,7 +10,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "credit_card", schema = "finance-app")
+@Table(name = "credit_card", schema = "finance_app")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
