@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "finance_app_user", schema = "finance-app")
+@Table(name = "finance_app_user", schema = "finance_app")
 @Getter
 @Setter
 @Builder
@@ -31,7 +31,7 @@ public class UserModel extends Model {
 
   public UserModel(@NotNull User user) {
     this.name = user.getName();
-    this.lastname = user.getLastName();
+    this.lastname = user.getLastname();
     this.email = user.getEmail();
     this.password = user.getPassword();
     this.salary = user.getSalary();

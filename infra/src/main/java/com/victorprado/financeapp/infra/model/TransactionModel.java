@@ -11,7 +11,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "transaction", schema = "finance-app")
+@Table(name = "transaction", schema = "finance_app")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

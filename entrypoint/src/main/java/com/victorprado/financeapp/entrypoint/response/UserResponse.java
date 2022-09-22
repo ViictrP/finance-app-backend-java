@@ -13,7 +13,7 @@ import lombok.Setter;
 public class UserResponse {
 
   private String name;
-  private String lastName;
+  private String lastname;
   private String email;
   private boolean active;
   private LocalDateTime createdAt;

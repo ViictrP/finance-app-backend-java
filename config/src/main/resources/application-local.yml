@@ -1,6 +1,10 @@
 server:
   port: 3333
 
+logging:
+  level:
+    root: INFO
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:15432/finance-app-database?schema=finance-app
@@ -8,4 +12,4 @@ spring:
     password: postgres
 
   liquibase:
-    default-schema: finance-app
+    default-schema: finance_app

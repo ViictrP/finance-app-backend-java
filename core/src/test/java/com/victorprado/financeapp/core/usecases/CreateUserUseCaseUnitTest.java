@@ -52,7 +52,7 @@ class CreateUserUseCaseUnitTest {
   private User getUser() {
     return User.builder()
       .name("Victor")
-      .lastName("Prado")
+      .lastname("Prado")
       .email("a@a.com")
       .password("1234")
       .build();
