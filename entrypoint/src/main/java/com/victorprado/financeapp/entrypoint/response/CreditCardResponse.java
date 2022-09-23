@@ -1,11 +1,12 @@
 package com.victorprado.financeapp.entrypoint.response;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
+@Builder
 public class CreditCardResponse {
 
+  private Long id;
   private String number;
 }

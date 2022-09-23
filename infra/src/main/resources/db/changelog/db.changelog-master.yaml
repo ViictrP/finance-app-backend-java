@@ -10,7 +10,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: varchar(255)
+                  type: bigserial
                   autoIncrement: false
                   constraints:
                     primaryKey: true
@@ -55,14 +55,14 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: varchar(255)
+                  type: bigserial
                   autoIncrement: false
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
                   name: user_id
-                  type: varchar(255)
+                  type: bigint
                   constraints:
                     nullable: false
                     foreignKeyName: fk_finance_app_user_id_credit_card
@@ -104,14 +104,14 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: varchar(255)
+                  type: bigserial
                   autoIncrement: false
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
                   name: credit_card_id
-                  type: varchar(255)
+                  type: bigint
                   constraints:
                     nullable: false
                     foreignKeyName: fk_credit_card_id_invoice
@@ -145,14 +145,14 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: varchar(255)
+                  type: bigserial
                   autoIncrement: false
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
                   name: invoice_id
-                  type: varchar(255)
+                  type: bigint
                   constraints:
                     nullable: true
                     foreignKeyName: fk_invoice_id_transaction
@@ -162,7 +162,7 @@ databaseChangeLog:
                     onUpdate: RESTRICT
               - column:
                   name: user_id
-                  type: varchar(255)
+                  type: bigint
                   constraints:
                     nullable: false
                     foreignKeyName: fk_finance_app_user_id_transaction

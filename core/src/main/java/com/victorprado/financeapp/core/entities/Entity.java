@@ -11,7 +11,7 @@ import lombok.Setter;
 @EqualsAndHashCode(exclude = "createdAt")
 public abstract class Entity {
 
-  private String id;
+  private Long id;
   private LocalDateTime createdAt;
 
   public void audit() {
