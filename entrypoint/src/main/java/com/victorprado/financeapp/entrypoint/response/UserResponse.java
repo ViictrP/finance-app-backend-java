@@ -3,13 +3,11 @@ package com.victorprado.financeapp.entrypoint.response;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@NoArgsConstructor
 @Getter
-@Setter
+@Builder
 public class UserResponse {
 
   private String name;

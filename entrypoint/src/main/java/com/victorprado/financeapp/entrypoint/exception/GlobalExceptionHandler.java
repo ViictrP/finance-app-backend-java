@@ -1,5 +1,6 @@
 package com.victorprado.financeapp.entrypoint.exception;
 
+import com.victorprado.financeapp.core.exceptions.CoreException;
 import com.victorprado.financeapp.core.exceptions.DatabaseException;
 import com.victorprado.financeapp.core.exceptions.InvalidDataException;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
   @ExceptionHandler
-  public ResponseEntity<ExceptionResponse> handleCoreException(InvalidDataException exception) {
+  public ResponseEntity<ExceptionResponse> handleCoreException(CoreException exception) {
     log.error(exception.getMessage(), exception);
     return ResponseEntity.unprocessableEntity().body(buildResponse(exception));
   }
@@ -20,9 +21,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler
   public ResponseEntity<ExceptionResponse> handleDatabaseException(DatabaseException exception) {
     log.error(exception.getMessage(), exception);
-    return ResponseEntity.internalServerError().body(ExceptionResponse.builder()
-      .message("An internal error occured")
-      .build());
+    return ResponseEntity.internalServerError().body(buildResponse(exception));
   }
 
   @ExceptionHandler
