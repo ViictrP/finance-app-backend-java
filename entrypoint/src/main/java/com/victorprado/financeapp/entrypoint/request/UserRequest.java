@@ -1,5 +1,6 @@
 package com.victorprado.financeapp.entrypoint.request;
 
+import java.math.BigDecimal;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -21,4 +22,6 @@ public class UserRequest {
 
   @NotBlank(message = "User must have a password")
   private String password;
+
+  private BigDecimal salary;
 }

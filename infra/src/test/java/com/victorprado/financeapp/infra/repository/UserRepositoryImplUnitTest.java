@@ -71,7 +71,7 @@ class UserRepositoryImplUnitTest {
     var user = UserModel.builder()
       .name("User")
       .build();
-    user.setId("UAHSDIGIU");
+    user.setId(1L);
     return user;
   }
 

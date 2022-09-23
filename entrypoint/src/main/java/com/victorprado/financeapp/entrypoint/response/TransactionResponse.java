@@ -8,7 +8,7 @@ import lombok.Getter;
 @Builder
 public class TransactionResponse {
 
-  private String id;
+  private Long id;
   private String description;
   private LocalDateTime createdAt;
 }

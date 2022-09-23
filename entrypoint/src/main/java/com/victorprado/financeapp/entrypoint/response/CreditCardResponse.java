@@ -7,5 +7,6 @@ import lombok.Getter;
 @Builder
 public class CreditCardResponse {
 
+  private Long id;
   private String number;
 }

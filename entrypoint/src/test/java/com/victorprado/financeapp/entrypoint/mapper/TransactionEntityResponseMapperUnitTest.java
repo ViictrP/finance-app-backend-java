@@ -34,7 +34,7 @@ class TransactionEntityResponseMapperUnitTest {
   void given_a_transaction_response_then_should_return_transaction_entity() {
     var response = TransactionResponse.builder()
       .description("Teste")
-      .id("Test")
+      .id(1L)
       .createdAt(LocalDateTime.now())
       .build();
 

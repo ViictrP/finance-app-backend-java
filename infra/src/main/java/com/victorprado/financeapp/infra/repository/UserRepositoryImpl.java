@@ -23,6 +23,7 @@ public class UserRepositoryImpl implements UserRepository {
     try {
       log.info("transforming new user {}", user.getEmail());
       UserModel userModel = mapper.toModel(user);
+      userModel.setActive(true);
       log.info("persisting new user {} into database", user.getEmail());
       UserModel savedUser = repository.save(userModel);
       log.info("new user {} created", userModel.getId());
