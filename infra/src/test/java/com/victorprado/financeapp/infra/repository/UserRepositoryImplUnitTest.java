@@ -3,6 +3,7 @@ package com.victorprado.financeapp.infra.repository;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.assertj.core.api.BDDAssertions.thenExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -10,6 +11,7 @@ import com.victorprado.financeapp.core.entities.User;
 import com.victorprado.financeapp.core.exceptions.DatabaseException;
 import com.victorprado.financeapp.infra.mapper.UserEntityModelMapper;
 import com.victorprado.financeapp.infra.model.UserModel;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -43,11 +45,37 @@ class UserRepositoryImplUnitTest {
     verify(repository).save(any(UserModel.class));
   }
 
-  public static UserModel getUserModel() {
+  @Test
+  void given_a_id_when_getting_user_then_should_return_user() {
+    given(repository.findById(anyString())).willReturn(Optional.of(getUserModel()));
+    given(mapper.toEntity(any(UserModel.class))).willReturn(getUser());
+
+    User user = repositoryImpl.getById("test");
+
+    then(user).isNotNull();
+
+    verify(repository).findById(anyString());
+  }
+
+  @Test
+  void given_a_id_when_getting_user_then_should_throwException() {
+    given(repository.findById(anyString())).willThrow(DatabaseException.class);
+
+    thenExceptionOfType(DatabaseException.class)
+      .isThrownBy(() -> repositoryImpl.getById("test"));
+
+    verify(repository).findById(anyString());
+  }
+
+  public UserModel getUserModel() {
     var user = UserModel.builder()
       .name("User")
       .build();
     user.setId("UAHSDIGIU");
     return user;
+  }
+
+  public User getUser() {
+    return User.builder().build();
   }
 }

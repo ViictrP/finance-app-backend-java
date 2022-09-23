@@ -96,6 +96,23 @@ class UserEntityResponseMapperUnitTest {
   }
 
   @Test
+  void given_empty_transactions_and_credit_cards_user_response_then_should_return_null_for_those_fields() {
+    var response = UserResponse.builder()
+      .active(true)
+      .createdAt(LocalDateTime.now())
+      .creditCards(List.of())
+      .transactions(List.of())
+      .email("email@email.com")
+      .salary(BigDecimal.ONE)
+      .name("Test")
+      .lastname("Test")
+      .build();
+    var user = mapper.toEntity(response);
+
+    then(user).usingRecursiveComparison().isEqualTo(user);
+  }
+
+  @Test
   void given_a_user_request_then_should_return_user_entity() {
     var request = new UserRequest();
 
