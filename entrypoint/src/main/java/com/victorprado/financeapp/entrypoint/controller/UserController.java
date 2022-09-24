@@ -1,6 +1,5 @@
 package com.victorprado.financeapp.entrypoint.controller;
 
-import com.victorprado.financeapp.core.entities.User;
 import com.victorprado.financeapp.core.usecases.CreateUserUseCase;
 import com.victorprado.financeapp.core.usecases.GetUserUseCase;
 import com.victorprado.financeapp.entrypoint.mapper.UserEntityResponseMapper;
