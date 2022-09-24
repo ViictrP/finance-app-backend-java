@@ -52,6 +52,7 @@
 						<configuration>
 							<finalName>financeapp-spring</finalName>
 							<classifier>${version}</classifier>
+							<outputDirectory>../</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
