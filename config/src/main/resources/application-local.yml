@@ -1,5 +1,5 @@
 server:
-  port: 3333
+  port: 8080
 
 logging:
   level:
@@ -10,6 +10,28 @@ spring:
     url: jdbc:postgresql://localhost:15432/finance-app-database?schema=finance_app
     username: postgres
     password: postgres
-
-liquibase:
-  default-schema: finance_app
+  security:
+    oauth2:
+      client:
+        registration:
+          finance-app-oidc:
+            provider: spring
+            client-id: finance-app
+            client-secret: secret
+            client-name: finance-app-oidc
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://127.0.0.1:8080/login/oauth2/code/{registrationId}"
+            scope: openid
+          finance-app-authorization-code:
+            provider: spring
+            client-id: finance-app
+            client-secret: secret
+            client-name: finance-app-authorization-code
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://127.0.0.1:8080/authorized"
+            scope: api.read
+        provider:
+          spring:
+            issuer-uri: http://auth-server:9000
+  liquibase:
+    default-schema: finance_app
