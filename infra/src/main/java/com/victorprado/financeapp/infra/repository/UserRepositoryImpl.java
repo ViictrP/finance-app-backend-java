@@ -2,10 +2,12 @@ package com.victorprado.financeapp.infra.repository;
 
 import com.victorprado.financeapp.core.entities.User;
 import com.victorprado.financeapp.core.exceptions.DatabaseException;
+import com.victorprado.financeapp.core.exceptions.InvalidDataException;
 import com.victorprado.financeapp.core.repositories.UserRepository;
 import com.victorprado.financeapp.infra.mapper.UserEntityModelMapper;
 import com.victorprado.financeapp.infra.model.UserModel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Slf4j
 public class UserRepositoryImpl implements UserRepository {
@@ -29,6 +31,10 @@ public class UserRepositoryImpl implements UserRepository {
       log.info("new user {} created", userModel.getId());
       user.setId(savedUser.getId());
       return user;
+    } catch(DataIntegrityViolationException exception) {
+      log.info("An error occured while saving new user {}", user.getEmail());
+      exception.getCause();
+      throw new InvalidDataException("User " + user.getEmail() + " has already been registered");
     } catch (Exception exception) {
       log.info("An error occured while saving new user {}", user.getEmail());
       throw new DatabaseException(exception.getMessage());
