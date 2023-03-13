@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @CrossOrigin("*")
 public class UserController {
-
+  //TODO: implement validators (notnull, notblank...)
   private final UserService service;
 
   @GetMapping("/me")
