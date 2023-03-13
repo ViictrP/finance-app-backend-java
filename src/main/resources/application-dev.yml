@@ -1,0 +1,22 @@
+server:
+  port: 8081
+
+logging:
+  level:
+    root: INFO
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:15432/finance-app-database?schema=finance_app
+    username: postgres
+    password: postgres
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/finance-app/protocol/openid-connect/certs
+
+  liquibase:
+    default-schema: finance_app
+    enabled: true
