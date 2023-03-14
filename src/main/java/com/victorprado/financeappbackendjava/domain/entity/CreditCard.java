@@ -38,7 +38,13 @@ public class CreditCard extends BaseEntity<Long> {
   private List<Invoice> invoices;
 
   public CreditCard(CreditCard creditCard, Invoice invoice) {
+    this.setId(creditCard.getId());
+    this.setCreatedAt(creditCard.getCreatedAt());
+    this.setModificatedAt(creditCard.getModificatedAt());
+    this.setDeleted(creditCard.isDeleted());
     this.invoices = new ArrayList<>();
+    this.invoiceClosingDay = creditCard.invoiceClosingDay;
+    this.description = creditCard.description;
     this.userId = creditCard.userId;
     this.title = creditCard.title;
     this.number = creditCard.number;

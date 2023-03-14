@@ -5,9 +5,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class CreditCardDTO {
+@EqualsAndHashCode(callSuper = true)
+public class CreditCardDTO extends BaseDTO {
 
   @NotBlank(message = "The user ID is required")
   private String userId;
