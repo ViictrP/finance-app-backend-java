@@ -35,5 +35,5 @@ public abstract class BaseEntity<T extends Serializable> {
     this.modificatedAt = LocalDateTime.now();
   }
 
-  public abstract Boolean validate();
+  public abstract boolean validate();
 }

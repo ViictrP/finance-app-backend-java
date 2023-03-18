@@ -1,11 +1,15 @@
 package com.victorprado.financeappbackendjava.service;
 
+import com.victorprado.financeappbackendjava.domain.exception.InvalidSalaryException;
 import com.victorprado.financeappbackendjava.domain.repository.CreditCardRepository;
 import com.victorprado.financeappbackendjava.domain.repository.RecurringExpenseRepository;
+import com.victorprado.financeappbackendjava.domain.repository.SalaryRepository;
 import com.victorprado.financeappbackendjava.domain.repository.TransactionRepository;
+import com.victorprado.financeappbackendjava.service.dto.SalaryDTO;
 import com.victorprado.financeappbackendjava.service.dto.UserDTO;
 import com.victorprado.financeappbackendjava.service.mapper.CreditCardMapper;
 import com.victorprado.financeappbackendjava.service.mapper.RecurringExpenseMapper;
+import com.victorprado.financeappbackendjava.service.mapper.SalaryMapper;
 import com.victorprado.financeappbackendjava.service.mapper.TransactionMapper;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,8 @@ public class UserService {
   private final CreditCardMapper creditCardMapper;
   private final TransactionMapper transactionMapper;
   private final RecurringExpenseMapper recurringExpenseMapper;
+  private final SalaryRepository salaryRepository;
+  private final SalaryMapper salaryMapper;
 
   @Cacheable(cacheNames = "get_user_profile_cache")
   public UserDTO getUser(Authentication authentication) {
@@ -37,15 +43,26 @@ public class UserService {
     var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(userId, today.getMonth().name(), today.getYear());
     var transactions = transactionRepository.findByUserIdAndInvoiceIsNull(userId);
     var recurringExpenses = recurringExpenseRepository.findByUserId(userId);
+    var salary = salaryRepository.findByUserId(userId).orElse(null);
     log.info("Building user object with all fetched data [user: {}]", email);
     return UserDTO.builder()
       .id(userId)
       .name(jwt.getClaim("given_name"))
       .lastname(jwt.getClaim("family_name"))
       .email((String) email)
+      .salary(salaryMapper.toDTO(salary))
       .creditCards(creditCardMapper.toDTO(creditCards))
       .transactions(transactionMapper.toDTO(transactions))
       .recurringExpenses(recurringExpenseMapper.toDTO(recurringExpenses))
       .build();
+  }
+
+  public SalaryDTO createSalary(SalaryDTO salary) {
+    var entity = salaryMapper.toEntity(salary);
+    if (!entity.validate()) {
+      throw new InvalidSalaryException();
+    }
+    var result = salaryRepository.save(entity);
+    return salaryMapper.toDTO(result);
   }
 }

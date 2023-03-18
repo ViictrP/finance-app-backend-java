@@ -3,11 +3,10 @@ package com.victorprado.financeappbackendjava.domain.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,7 +39,7 @@ public class Transaction extends BaseEntity<Long> {
   private Invoice invoice;
 
   @Override
-  public Boolean validate() {
-    return null;
+  public boolean validate() {
+    return true;
   }
 }

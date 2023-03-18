@@ -14,6 +14,7 @@ public class UserDTO {
   private String name;
   private String lastname;
   private String email;
+  private SalaryDTO salary;
   private List<CreditCardDTO> creditCards;
   private List<TransactionDTO> transactions;
   private List<RecurringExpenseDTO> recurringExpenses;

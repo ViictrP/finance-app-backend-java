@@ -6,6 +6,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +17,9 @@ import lombok.Setter;
 @Setter
 public class Invoice extends BaseEntity<Long> {
   private Boolean isClosed = Boolean.FALSE;
+  @NotNull(message = "The year is required")
   private Integer year;
+  @NotBlank(message = "The month is required")
   private String month;
 
   @ManyToOne()
@@ -26,7 +30,7 @@ public class Invoice extends BaseEntity<Long> {
   private List<Transaction> transactions;
 
   @Override
-  public Boolean validate() {
-    return null;
+  public boolean validate() {
+    return true;
   }
 }

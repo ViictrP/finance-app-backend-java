@@ -4,12 +4,14 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import javax.validation.constraints.*;
 
 @Entity
 @Getter
@@ -55,7 +57,7 @@ public class CreditCard extends BaseEntity<Long> {
   }
 
   @Override
-  public Boolean validate() {
-    return null;
+  public boolean validate() {
+    return true;
   }
 }

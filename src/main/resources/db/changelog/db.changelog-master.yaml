@@ -299,3 +299,6 @@ databaseChangeLog:
                   name: category
               - column:
                   name: created_at
+
+  - includeAll:
+      path: /db/changelog/changes
