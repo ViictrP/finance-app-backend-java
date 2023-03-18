@@ -45,6 +45,11 @@ databaseChangeLog:
                   name: background_color
                   type: varchar(255)
               - column:
+                  name: deleted
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
                   name: created_at
                   type: timestamp
                   constraints:
@@ -88,6 +93,11 @@ databaseChangeLog:
               - column:
                   name: month
                   type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted
+                  type: boolean
                   constraints:
                     nullable: false
               - column:
@@ -144,21 +154,69 @@ databaseChangeLog:
               - column:
                   name: is_installment
                   type: Boolean
-                  constraints:
-                    nullable: false
               - column:
                   name: installment_amount
                   type: Integer
-                  constraints:
-                    nullable: false
               - column:
                   name: installment_number
                   type: Integer
-                  constraints:
-                    nullable: false
+              - column:
+                  name: installment_id
+                  type: varchar(255)
               - column:
                   name: date
                   type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modificated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: recurring_expense
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  autoIncrement: false
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: Decimal
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted
+                  type: boolean
                   constraints:
                     nullable: false
               - column:
@@ -189,3 +247,58 @@ databaseChangeLog:
             schemaName: finance_app
             tableName: invoice
             validate: true
+
+        - createIndex:
+            tableName: credit_card
+            indexName: creditcard_user_createdat_index
+            schemaName: finance_app
+            unique: true
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: created_at
+
+        - createIndex:
+            tableName: invoice
+            indexName: invoice_creditcard_createdat_index
+            schemaName: finance_app
+            unique: true
+            columns:
+              - column:
+                  name: credit_card_id
+              - column:
+                  name: created_at
+
+        - createIndex:
+            tableName: transaction
+            indexName: transaction_user_invoice_date_category_createdat_index
+            schemaName: finance_app
+            unique: true
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: invoice_id
+              - column:
+                  name: date
+              - column:
+                  name: category
+              - column:
+                  name: created_at
+
+        - createIndex:
+            tableName: recurring_expense
+            indexName: recurringexpense_user_category_createdat_index
+            schemaName: finance_app
+            unique: true
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: category
+              - column:
+                  name: created_at
+
+  - includeAll:
+      path: /db/changelog/changes

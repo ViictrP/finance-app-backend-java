@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+//TODO: fix unit tests
 @SpringJUnitConfig(classes = {UserService.class})
 class UserServiceTest {
 
