@@ -1,5 +1,8 @@
 package com.victorprado.financeappbackendjava.entrypoint.controller;
 
+import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_ADMIN;
+import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_USER;
+
 import com.victorprado.financeappbackendjava.service.UserService;
 import com.victorprado.financeappbackendjava.service.dto.SalaryDTO;
 import com.victorprado.financeappbackendjava.service.dto.UserDTO;
@@ -24,19 +27,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
 @CrossOrigin("*")
+@Secured({ROLE_USER, ROLE_ADMIN})
 public class UserController {
 
   private final UserService service;
 
   @GetMapping("/me")
-  @Secured({"ROLE_USER"})
   public ResponseEntity<UserDTO> getProfile(Authentication authentication) {
     log.info("Get profile request received");
     return ResponseEntity.ok(service.getUser(authentication));
   }
 
   @PostMapping("/salaries")
-  @Secured({"ROLE_USER"})
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<SalaryDTO> createSalary(@Valid @RequestBody SalaryDTO salary,
     Authentication authentication) {
