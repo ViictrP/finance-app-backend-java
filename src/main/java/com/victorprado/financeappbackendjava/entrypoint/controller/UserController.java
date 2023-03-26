@@ -4,6 +4,7 @@ import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_ADMI
 import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_USER;
 
 import com.victorprado.financeappbackendjava.service.UserService;
+import com.victorprado.financeappbackendjava.service.dto.BackupDTO;
 import com.victorprado.financeappbackendjava.service.dto.SalaryDTO;
 import com.victorprado.financeappbackendjava.service.dto.UserDTO;
 import jakarta.validation.Valid;
@@ -47,5 +48,14 @@ public class UserController {
     var result = service.createSalary(salary);
     return ResponseEntity.created(URI.create("/v1/users/salaries" + result.getId()))
       .body(result);
+  }
+
+  @PostMapping("/backups")
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<Void> importBackup(@Valid @RequestBody BackupDTO backup,
+    Authentication authentication) {
+    log.info("Backup request received");
+    service.importBackup(backup, authentication);
+    return ResponseEntity.ok().build();
   }
 }

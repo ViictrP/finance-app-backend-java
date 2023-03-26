@@ -1,10 +1,16 @@
 package com.victorprado.financeappbackendjava.service;
 
+import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
+import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
+
+import com.victorprado.financeappbackendjava.domain.enums.MonthEnum;
 import com.victorprado.financeappbackendjava.domain.exception.InvalidSalaryException;
+import com.victorprado.financeappbackendjava.domain.exception.LoggedUserNotFoundInBackup;
 import com.victorprado.financeappbackendjava.domain.repository.CreditCardRepository;
 import com.victorprado.financeappbackendjava.domain.repository.RecurringExpenseRepository;
 import com.victorprado.financeappbackendjava.domain.repository.SalaryRepository;
 import com.victorprado.financeappbackendjava.domain.repository.TransactionRepository;
+import com.victorprado.financeappbackendjava.service.dto.BackupDTO;
 import com.victorprado.financeappbackendjava.service.dto.SalaryDTO;
 import com.victorprado.financeappbackendjava.service.dto.UserDTO;
 import com.victorprado.financeappbackendjava.service.mapper.CreditCardMapper;
@@ -18,10 +24,12 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
   private final CreditCardRepository creditCardRepository;
@@ -40,8 +48,13 @@ public class UserService {
     var email = jwt.getClaim("email");
     log.info("Getting credit cards and transactions of the user [user: {}]", email);
     var today = LocalDate.now();
-    var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(userId, today.getMonth().name(), today.getYear());
-    var transactions = transactionRepository.findByUserIdAndInvoiceIsNull(userId);
+    var month = MonthEnum.getMonth(today.getMonthValue());
+    var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(userId, month.name(),
+      today.getYear());
+    var from = today.with(firstDayOfMonth()).atStartOfDay();
+    var to = today.with(lastDayOfMonth()).atTime(23, 59, 59);
+    var transactions = transactionRepository.findByUserIdAndInvoiceIsNullAndDateIsBetween(userId,
+      from, to);
     var recurringExpenses = recurringExpenseRepository.findByUserId(userId);
     var salary = salaryRepository.findByUserId(userId).orElse(null);
     log.info("Building user object with all fetched data [user: {}]", email);
@@ -64,5 +77,47 @@ public class UserService {
     }
     var result = salaryRepository.save(entity);
     return salaryMapper.toDTO(result);
+  }
+
+  @Transactional
+  public void importBackup(BackupDTO backup, Authentication authentication) {
+    log.info("Verifying if logged user is present in the backup. User ID: {}",
+      authentication.getName());
+    var userId = authentication.getName();
+    var email = ((Jwt) authentication.getPrincipal()).getClaim("email");
+    var user = backup.getUsers().stream().filter(u -> email.equals(u.getEmail()))
+      .findFirst().orElseThrow(LoggedUserNotFoundInBackup::new);
+
+    if (user.getCreditCards() != null) {
+      log.info("Converting the credit cards. User ID: {}", authentication.getName());
+      var creditCards = creditCardMapper.toEntity(user.getCreditCards());
+      creditCards.forEach(creditCard -> {
+        creditCard.setUserId(userId);
+        creditCard.getInvoices().forEach(invoice -> {
+          invoice.setCreditCard(creditCard);
+          invoice.getTransactions().forEach(transaction -> transaction.setInvoice(invoice));
+        });
+      });
+
+      creditCardRepository.saveAll(creditCards);
+    }
+
+    if (user.getRecurringExpenses() != null) {
+      log.info("Converting the recurring expenses. User ID: {}", authentication.getName());
+      var recurringExpenses = recurringExpenseMapper.toEntity(user.getRecurringExpenses());
+      recurringExpenses.forEach(recurringExpense -> recurringExpense.setUserId(userId));
+
+      recurringExpenseRepository.saveAll(recurringExpenses);
+    }
+
+    if (user.getTransactions() != null) {
+      log.info("Converting the transactions. User ID: {}", authentication.getName());
+      var transactions = transactionMapper.toEntity(user.getTransactions());
+      transactions.forEach(transaction -> transaction.setUserId(userId));
+
+      transactionRepository.saveAll(transactions);
+    }
+
+
   }
 }
