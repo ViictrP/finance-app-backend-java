@@ -5,6 +5,7 @@ import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_USER
 
 import com.victorprado.financeappbackendjava.service.UserService;
 import com.victorprado.financeappbackendjava.service.dto.BackupDTO;
+import com.victorprado.financeappbackendjava.service.dto.ProfileCriteria;
 import com.victorprado.financeappbackendjava.service.dto.SalaryDTO;
 import com.victorprado.financeappbackendjava.service.dto.UserDTO;
 import jakarta.validation.Valid;
@@ -34,9 +35,10 @@ public class UserController {
   private final UserService service;
 
   @GetMapping("/me")
-  public ResponseEntity<UserDTO> getProfile(Authentication authentication) {
+  public ResponseEntity<UserDTO> getProfile(
+    ProfileCriteria criteria, Authentication authentication) {
     log.info("Get profile request received");
-    return ResponseEntity.ok(service.getUser(authentication));
+    return ResponseEntity.ok(service.getUser(criteria, authentication));
   }
 
   @PostMapping("/salaries")

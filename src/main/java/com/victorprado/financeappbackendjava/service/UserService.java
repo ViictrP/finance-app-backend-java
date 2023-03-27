@@ -11,6 +11,7 @@ import com.victorprado.financeappbackendjava.domain.repository.RecurringExpenseR
 import com.victorprado.financeappbackendjava.domain.repository.SalaryRepository;
 import com.victorprado.financeappbackendjava.domain.repository.TransactionRepository;
 import com.victorprado.financeappbackendjava.service.dto.BackupDTO;
+import com.victorprado.financeappbackendjava.service.dto.ProfileCriteria;
 import com.victorprado.financeappbackendjava.service.dto.SalaryDTO;
 import com.victorprado.financeappbackendjava.service.dto.UserDTO;
 import com.victorprado.financeappbackendjava.service.mapper.CreditCardMapper;
@@ -42,17 +43,27 @@ public class UserService {
   private final SalaryMapper salaryMapper;
 
   @Cacheable(cacheNames = "get_user_profile_cache")
-  public UserDTO getUser(Authentication authentication) {
+  public UserDTO getUser(ProfileCriteria criteria, Authentication authentication) {
     var jwt = (Jwt) authentication.getPrincipal();
     var userId = (String) jwt.getClaim("sub");
     var email = jwt.getClaim("email");
     log.info("Getting credit cards and transactions of the user [user: {}]", email);
     var today = LocalDate.now();
-    var month = MonthEnum.getMonth(today.getMonthValue());
-    var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(userId, month.name(),
-      today.getYear());
-    var from = today.with(firstDayOfMonth()).atStartOfDay();
-    var to = today.with(lastDayOfMonth()).atTime(23, 59, 59);
+    var month = criteria.getMonth() != null ? MonthEnum.getMonth(criteria.getMonth()) : MonthEnum.getMonth(today.getMonthValue());
+    var year = criteria.getYear() != null ? criteria.getYear() : today.getYear();
+    var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(userId, month.name(), year);
+
+    var from = today
+      .withYear(year)
+      .withMonth(month.getIndex())
+      .with(firstDayOfMonth()).atStartOfDay();
+
+    var to = today
+      .withMonth(month.getIndex())
+      .withYear(year)
+      .with(lastDayOfMonth())
+      .atTime(23, 59, 59);
+
     var transactions = transactionRepository.findByUserIdAndInvoiceIsNullAndDateIsBetween(userId,
       from, to);
     var recurringExpenses = recurringExpenseRepository.findByUserId(userId);

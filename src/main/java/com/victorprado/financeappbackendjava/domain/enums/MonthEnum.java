@@ -28,4 +28,10 @@ public enum MonthEnum {
       .filter(month -> index.equals(month.getIndex()))
       .findFirst().orElseThrow();
   }
+
+  public static MonthEnum getMonth(String name) {
+    return Arrays.stream(MonthEnum.values())
+      .filter(month -> name.equals(month.name()))
+      .findFirst().orElseThrow();
+  }
 }
