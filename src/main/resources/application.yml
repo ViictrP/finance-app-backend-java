@@ -15,8 +15,13 @@ spring:
       maximum-pool-size: 30
       minimum-idle: 10
       schema: finance_app
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://${ISSUER_URI}/realms/${ISSUER_REALM}/protocol/openid-connect/certs
 
   liquibase:
     default-schema: finance_app
     contexts: local
-    enabled: false
+    enabled: true
