@@ -1,5 +1,7 @@
 package com.victorprado.financeappbackendjava.service.dto;
 
+import jakarta.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +17,10 @@ public class UserDTO {
   private String lastname;
   private String email;
   private SalaryDTO salary;
-  private List<CreditCardDTO> creditCards;
-  private List<TransactionDTO> transactions;
-  private List<RecurringExpenseDTO> recurringExpenses;
+  @Valid
+  private List<CreditCardDTO> creditCards = new ArrayList<>();
+  @Valid
+  private List<TransactionDTO> transactions = new ArrayList<>();
+  @Valid
+  private List<RecurringExpenseDTO> recurringExpenses = new ArrayList<>();
 }

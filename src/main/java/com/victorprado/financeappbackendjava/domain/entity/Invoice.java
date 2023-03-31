@@ -26,7 +26,7 @@ public class Invoice extends BaseEntity<Long> {
   @JoinColumn(name = "credit_card_id")
   private CreditCard creditCard;
 
-  @OneToMany(mappedBy = "invoice", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Transaction> transactions;
 
   @Override

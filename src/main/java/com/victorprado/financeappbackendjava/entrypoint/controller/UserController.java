@@ -1,6 +1,11 @@
 package com.victorprado.financeappbackendjava.entrypoint.controller;
 
+import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_ADMIN;
+import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_USER;
+
 import com.victorprado.financeappbackendjava.service.UserService;
+import com.victorprado.financeappbackendjava.service.dto.BackupDTO;
+import com.victorprado.financeappbackendjava.service.dto.ProfileCriteria;
 import com.victorprado.financeappbackendjava.service.dto.SalaryDTO;
 import com.victorprado.financeappbackendjava.service.dto.UserDTO;
 import jakarta.validation.Valid;
@@ -24,20 +29,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
 @CrossOrigin("*")
+@Secured({ROLE_USER, ROLE_ADMIN})
 public class UserController {
 
-  //TODO: implement validators (notnull, notblank...)
   private final UserService service;
 
   @GetMapping("/me")
-  @Secured({"ROLE_USER"})
-  public ResponseEntity<UserDTO> getProfile(Authentication authentication) {
+  public ResponseEntity<UserDTO> getProfile(
+    ProfileCriteria criteria, Authentication authentication) {
     log.info("Get profile request received");
-    return ResponseEntity.ok(service.getUser(authentication));
+    return ResponseEntity.ok(service.getUser(criteria, authentication));
   }
 
   @PostMapping("/salaries")
-  @Secured({"ROLE_USER"})
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<SalaryDTO> createSalary(@Valid @RequestBody SalaryDTO salary,
     Authentication authentication) {
@@ -46,5 +50,14 @@ public class UserController {
     var result = service.createSalary(salary);
     return ResponseEntity.created(URI.create("/v1/users/salaries" + result.getId()))
       .body(result);
+  }
+
+  @PostMapping("/backups")
+  @ResponseStatus(HttpStatus.OK)
+  public ResponseEntity<Void> importBackup(@Valid @RequestBody BackupDTO backup,
+    Authentication authentication) {
+    log.info("Backup request received");
+    service.importBackup(backup, authentication);
+    return ResponseEntity.ok().build();
   }
 }

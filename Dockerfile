@@ -1,12 +1,12 @@
-FROM maven:3-eclipse-temurin-18-alpine
-RUN mkdir /opt/app
-WORKDIR /opt/app
-COPY ./financeapp-spring-1.0.0-SNAPSHOT.jar .
+FROM openjdk:18
+COPY target/*.jar /app.jar
 
-ENV PORT=$PORT
+ENV PORT=8080
 ENV DATABASE_URL=$DATABASE_URL
 ENV DB_USER=$DB_USER
 ENV DB_PASSWORD=$DB_PASSWORD
+ENV ISSUER_URI=$ISSUER_URI
+ENV ISSUER_REALM=$ISSUER_HOST
 
-CMD ["java", "-jar", "./financeapp-spring-1.0.0-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/app.jar"]
 EXPOSE 8080
