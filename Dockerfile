@@ -6,7 +6,7 @@ RUN mvn package
 FROM openjdk:18
 WORKDIR /usr/app
 
-COPY --from=maven /usr/app/target/*.jar /usr/app.jar
+COPY --from=maven /usr/app/target/app.jar /usr/app.jar
 
 ENV PORT=$PORT
 ENV DATABASE_URL=$DATABASE_URL
@@ -15,5 +15,5 @@ ENV DB_PASSWORD=$DB_PASSWORD
 ENV ISSUER_URI=$ISSUER_URI
 ENV ISSUER_REALM=$ISSUER_HOST
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "/usr/app.jar"]
 EXPOSE $PORT
