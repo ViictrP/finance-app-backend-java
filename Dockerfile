@@ -1,5 +1,5 @@
 FROM openjdk:18
-COPY target/*.jar /app.jar
+COPY ./target/*.jar /app.jar
 
 ENV PORT=8080
 ENV DATABASE_URL=$DATABASE_URL
