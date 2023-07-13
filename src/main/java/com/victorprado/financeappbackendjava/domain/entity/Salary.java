@@ -14,13 +14,17 @@ import org.hibernate.annotations.Where;
 @Setter
 @Where(clause = "deleted = false")
 public class Salary extends BaseEntity<Long> {
+
   @NotBlank(message = "The user ID is required")
   private String userId;
+
   @Column(precision = 2)
   @NotNull(message = "The value is required")
   private BigDecimal value;
+
   @NotBlank(message = "The month is required")
   private String month;
+
   @NotNull(message = "The year is required")
   private Integer year;
 

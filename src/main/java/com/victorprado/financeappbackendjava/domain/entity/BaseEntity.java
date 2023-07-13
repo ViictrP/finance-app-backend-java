@@ -24,6 +24,10 @@ public abstract class BaseEntity<T extends Serializable> {
   private LocalDateTime modificatedAt;
   private boolean deleted = false;
 
+  public boolean isNew() {
+    return this.id == null;
+  }
+
   @PrePersist
   public void prePersis() {
     this.createdAt = LocalDateTime.now();

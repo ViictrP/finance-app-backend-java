@@ -19,6 +19,8 @@ import com.victorprado.financeappbackendjava.service.mapper.RecurringExpenseMapp
 import com.victorprado.financeappbackendjava.service.mapper.SalaryMapper;
 import com.victorprado.financeappbackendjava.service.mapper.TransactionMapper;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -67,7 +69,7 @@ public class UserService {
     var transactions = transactionRepository.findByUserIdAndInvoiceIsNullAndDateIsBetween(userId,
       from, to);
     var recurringExpenses = recurringExpenseRepository.findByUserId(userId);
-    var salary = salaryRepository.findByUserId(userId).orElse(null);
+    var salary = salaryRepository.findByUserIdAndMonthAndYear(userId, month.name(), from.getYear()).orElse(null);
     log.info("Building user object with all fetched data [user: {}]", email);
     return UserDTO.builder()
       .id(userId)
@@ -81,10 +83,15 @@ public class UserService {
       .build();
   }
 
-  public SalaryDTO createSalary(SalaryDTO salary) {
+  @Transactional
+  public SalaryDTO saveSalary(SalaryDTO salary) {
     var entity = salaryMapper.toEntity(salary);
     if (!entity.validate()) {
       throw new InvalidSalaryException();
+    }
+    if (!entity.isNew()) {
+      entity = salaryRepository.findById(salary.getId()).orElse(entity);
+      entity.setValue(salary.getValue());
     }
     var result = salaryRepository.save(entity);
     return salaryMapper.toDTO(result);

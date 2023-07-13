@@ -47,7 +47,7 @@ public class UserController {
     Authentication authentication) {
     log.info("Create salary request received");
     salary.setUserId(authentication.getName());
-    var result = service.createSalary(salary);
+    var result = service.saveSalary(salary);
     return ResponseEntity.created(URI.create("/v1/users/salaries" + result.getId()))
       .body(result);
   }

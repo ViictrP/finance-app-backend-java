@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
   @ResponseBody
   @ResponseStatus(HttpStatus.CONFLICT)
   @ExceptionHandler(TransactionException.class)
-  public String handleDuplicateRegisterException(TransactionException exception) {
-    return exception.getCause().getMessage();
+  public ResponseEntity<String> handleDuplicateRegisterException(TransactionException exception) {
+    return new ResponseEntity<>(exception.getCause().getMessage(), HttpStatus.CONFLICT);
   }
 }
