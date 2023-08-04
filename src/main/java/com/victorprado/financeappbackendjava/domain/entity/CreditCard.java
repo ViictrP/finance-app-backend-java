@@ -18,6 +18,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class CreditCard extends BaseEntity<Long> {
+  private static final String DEFAULT_BACKGROUND_COLOR = "bg-zinc-900";
+
   @NotBlank(message = "The user ID is required")
   private String userId;
 
@@ -34,7 +36,7 @@ public class CreditCard extends BaseEntity<Long> {
   @Size(min = 4, max = 4, message = "The number should contain ${max} characters")
   private String number;
 
-  private String backgroundColor;
+  private String backgroundColor = DEFAULT_BACKGROUND_COLOR;
 
   @OneToMany(mappedBy = "creditCard", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Invoice> invoices;

@@ -31,7 +31,7 @@ class UserControllerTest {
   @Test
   @DisplayName("Should return logged user data")
   void test1() throws Exception {
-    when(service.getUser(any(), any())).thenReturn(dto());
+    when(service.getUser(any())).thenReturn(dto());
 
     mockMvc.perform(get(ENDPOINT + "/me")
       .with(jwt()))

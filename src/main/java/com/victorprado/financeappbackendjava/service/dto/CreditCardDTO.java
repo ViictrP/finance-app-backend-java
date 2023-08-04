@@ -3,15 +3,15 @@ package com.victorprado.financeappbackendjava.service.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class CreditCardDTO extends BaseDTO {
 
-  @NotBlank(message = "The user ID is required")
   private String userId;
 
   @NotBlank(message = "The title is required")
@@ -27,7 +27,7 @@ public class CreditCardDTO extends BaseDTO {
   @Size(min = 4, max = 4, message = "The number should contain ${max} characters")
   private String number;
 
-  private String backgroundColor;
+  private String backgroundColor = "bg-zinc-900";
 
   private List<InvoiceDTO> invoices;
 }

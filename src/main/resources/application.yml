@@ -19,7 +19,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://${ISSUER_URI}/realms/${ISSUER_REALM}/protocol/openid-connect/certs
+          jwk-set-uri: https://${ISSUER_URI}/realms/${ISSUER_REALM}/protocol/openid-connect/certs
 
   liquibase:
     default-schema: finance_app

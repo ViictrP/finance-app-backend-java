@@ -17,6 +17,8 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+  private static final String RESOURCE_HAS_ALREADY_BEEN_SAVED = "The resource has already been saved.";
+
   @ExceptionHandler(CoreException.class)
   public ResponseEntity<String> handleCoreExceptions(CoreException exception) {
     return ResponseEntity.status(exception.getStatus())
@@ -39,7 +41,7 @@ public class GlobalExceptionHandler {
   @ResponseBody
   @ResponseStatus(HttpStatus.CONFLICT)
   @ExceptionHandler(TransactionException.class)
-  public ResponseEntity<String> handleDuplicateRegisterException(TransactionException exception) {
-    return new ResponseEntity<>(exception.getCause().getMessage(), HttpStatus.CONFLICT);
+  public ResponseEntity<Map<String, String>> handleDuplicateRegisterException(TransactionException exception) {
+    return new ResponseEntity<>(Map.of("message", RESOURCE_HAS_ALREADY_BEEN_SAVED), HttpStatus.CONFLICT);
   }
 }

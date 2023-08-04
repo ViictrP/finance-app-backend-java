@@ -9,7 +9,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class SalaryDTO extends BaseDTO {
-  @NotBlank(message = "The user ID is required")
   private String userId;
   @NotNull(message = "The value is required")
   private BigDecimal value;
