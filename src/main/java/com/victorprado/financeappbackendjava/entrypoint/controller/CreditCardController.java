@@ -6,8 +6,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_ADMIN;
 import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_USER;
@@ -23,10 +26,10 @@ public class CreditCardController {
     private final CreditCardService service;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public CreditCardDTO create(@Valid @RequestBody CreditCardDTO dto) {
+    public ResponseEntity<CreditCardDTO> create(@Valid @RequestBody CreditCardDTO dto) {
         log.info("Create credit card {} request received", dto.getTitle());
-        return service.create(dto);
+        var created = service.create(dto);
+        return ResponseEntity.created(URI.create("/v1/credit-cards/" + created.getId()))
+                .body(created);
     }
 }
