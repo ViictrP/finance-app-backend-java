@@ -7,15 +7,18 @@ import com.victorprado.financeappbackendjava.service.mapper.CreditCardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CreditCardService {
 
     private final CreditCardRepository repository;
     private final CreditCardMapper mapper;
 
+    @Transactional
     public CreditCardDTO create(CreditCardDTO dto) {
         log.info("Converting the credit card {} information", dto.getTitle());
         var entity = mapper.toEntity(dto);

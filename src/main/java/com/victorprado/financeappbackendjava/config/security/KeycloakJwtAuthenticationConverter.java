@@ -41,7 +41,7 @@ public class KeycloakJwtAuthenticationConverter implements
   }
 
   /**
-   * orquestra a extração dos authorities
+   * Orquestra a extração dos authorities
    *
    * @param jwt - the jwt
    * @return Collection<GrantedAuthority> contendo as roles e scopes do jwt

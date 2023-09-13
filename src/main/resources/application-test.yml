@@ -1,0 +1,35 @@
+logging:
+  level:
+    root: INFO
+
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:h2:mem:internal;DATABASE_TO_UPPER=TRUE;DB_CLOSE_DELAY=-1;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DB_CLOSE_ON_EXIT=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS TEST;
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    name: internal
+    hikari:
+      schema: TEST
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    database: H2
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/finance-app/protocol/openid-connect/certs
+
+  liquibase:
+    enabled: true
+    drop-first: true
+    default-schema: TEST

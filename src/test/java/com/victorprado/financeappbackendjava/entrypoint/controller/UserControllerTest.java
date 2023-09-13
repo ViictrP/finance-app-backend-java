@@ -1,53 +1,42 @@
 package com.victorprado.financeappbackendjava.entrypoint.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
-import com.victorprado.financeappbackendjava.service.UserService;
-import com.victorprado.financeappbackendjava.service.dto.UserDTO;
+import com.victorprado.financeappbackendjava.Application;
+import com.victorprado.financeappbackendjava.domain.roles.Roles;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest
-@ActiveProfiles(profiles = {"dev"})
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = {Application.class}
+)
+@ActiveProfiles(profiles = "test")
+@AutoConfigureMockMvc
+@WithMockUser(authorities = Roles.ROLE_ADMIN)
 class UserControllerTest {
-  private static final String ENDPOINT = "/v1/users";
+    private static final String ENDPOINT = "/v1/users";
 
-  @MockBean
-  UserService service;
+    @Autowired
+    MockMvc mockMvc;
 
-  @Autowired
-  MockMvc mockMvc;
-
-  @Test
-  @DisplayName("Should return logged user data")
-  void test1() throws Exception {
-    when(service.getUser(any())).thenReturn(dto());
-
-    mockMvc.perform(get(ENDPOINT + "/me")
-      .with(jwt()))
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.id").value("ID"))
-      .andExpect(jsonPath("$.name").value("NAME"))
-      .andExpect(jsonPath("$.lastname").value("LAST_NAME"))
-      .andExpect(jsonPath("$.email").value("EMAIL"));
-  }
-
-  private static UserDTO dto() {
-    return UserDTO.builder()
-      .id("ID")
-      .name("NAME")
-      .lastname("LAST_NAME")
-      .email("EMAIL")
-      .build();
-  }
+    @Test
+    @DisplayName("Should return logged user data")
+    void test1() throws Exception {
+        mockMvc.perform(get(ENDPOINT + "/me")
+                        .with(jwt().authorities(() -> Roles.ROLE_ADMIN)))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.id").value("user"));
+    }
 }

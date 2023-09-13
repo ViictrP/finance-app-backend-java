@@ -54,6 +54,5 @@ databaseChangeLog:
             columnNames: month, year, user_id
             constraintName: unique_month_year_invoice_user
             initiallyDeferred: true
-            schemaName: finance_app
             tableName: salary
             validate: true

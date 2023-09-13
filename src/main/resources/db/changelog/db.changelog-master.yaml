@@ -3,9 +3,7 @@ databaseChangeLog:
   - changeSet:
       id: 1
       author: Victor
-      liquibaseSchemaName: finance_app
       changes:
-
         - createTable:
             tableName: credit_card
             columns:
@@ -78,8 +76,7 @@ databaseChangeLog:
                     foreignKeyName: fk_credit_card_id_invoice
                     referencedColumnNames: id
                     referencedTableName: credit_card
-                    onDelete: RESTRICT
-                    onUpdate: RESTRICT
+              
               - column:
                   name: is_closed
                   type: Boolean
@@ -129,8 +126,6 @@ databaseChangeLog:
                     foreignKeyName: fk_invoice_id_transaction
                     referencedColumnNames: id
                     referencedTableName: invoice
-                    onDelete: RESTRICT
-                    onUpdate: RESTRICT
               - column:
                   name: user_id
                   type: varchar(255)
@@ -235,7 +230,6 @@ databaseChangeLog:
             columnNames: number, user_id
             constraintName: unique_number_finance_app_user_id_credit_card
             initiallyDeferred: true
-            schemaName: finance_app
             tableName: credit_card
             validate: true
 
@@ -244,14 +238,12 @@ databaseChangeLog:
             columnNames: month, year, credit_card_id
             constraintName: unique_month_year_invoice_credit_card
             initiallyDeferred: true
-            schemaName: finance_app
             tableName: invoice
             validate: true
 
         - createIndex:
             tableName: credit_card
             indexName: creditcard_user_createdat_index
-            schemaName: finance_app
             unique: true
             columns:
               - column:
@@ -262,7 +254,6 @@ databaseChangeLog:
         - createIndex:
             tableName: invoice
             indexName: invoice_creditcard_createdat_index
-            schemaName: finance_app
             unique: true
             columns:
               - column:
@@ -273,7 +264,6 @@ databaseChangeLog:
         - createIndex:
             tableName: transaction
             indexName: transaction_user_invoice_date_category_createdat_index
-            schemaName: finance_app
             unique: true
             columns:
               - column:
@@ -290,7 +280,6 @@ databaseChangeLog:
         - createIndex:
             tableName: recurring_expense
             indexName: recurringexpense_user_category_createdat_index
-            schemaName: finance_app
             unique: true
             columns:
               - column:
