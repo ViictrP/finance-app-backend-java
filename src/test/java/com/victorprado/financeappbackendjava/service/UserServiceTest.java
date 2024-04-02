@@ -1,24 +1,13 @@
 package com.victorprado.financeappbackendjava.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 import com.victorprado.financeappbackendjava.domain.repository.CreditCardRepository;
 import com.victorprado.financeappbackendjava.domain.repository.RecurringExpenseRepository;
-import com.victorprado.financeappbackendjava.domain.repository.SalaryRepository;
 import com.victorprado.financeappbackendjava.domain.repository.TransactionRepository;
-import com.victorprado.financeappbackendjava.entrypoint.controller.context.SecurityContext;
 import com.victorprado.financeappbackendjava.service.dto.ProfileCriteria;
-import com.victorprado.financeappbackendjava.service.mapper.CreditCardMapper;
 import com.victorprado.financeappbackendjava.service.mapper.CreditCardMapperImpl;
-import com.victorprado.financeappbackendjava.service.mapper.InvoiceMapper;
 import com.victorprado.financeappbackendjava.service.mapper.InvoiceMapperImpl;
-import com.victorprado.financeappbackendjava.service.mapper.RecurringExpenseMapper;
 import com.victorprado.financeappbackendjava.service.mapper.RecurringExpenseMapperImpl;
-import com.victorprado.financeappbackendjava.service.mapper.SalaryMapperImpl;
 import com.victorprado.financeappbackendjava.service.mapper.TransactionMapperImpl;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,14 +18,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 //TODO: fix unit tests
 @SpringJUnitConfig(classes = {
   UserService.class,
   CreditCardMapperImpl.class,
   InvoiceMapperImpl.class,
   TransactionMapperImpl.class,
-  RecurringExpenseMapperImpl.class,
-  SalaryMapperImpl.class
+  RecurringExpenseMapperImpl.class
 })
 class UserServiceTest {
   @MockBean
@@ -47,8 +41,6 @@ class UserServiceTest {
   TransactionRepository transactionRepository;
   @MockBean
   RecurringExpenseRepository recurringExpenseRepository;
-  @MockBean
-  SalaryRepository salaryRepository;
   @Autowired
   UserService service;
   Map<String, Object> claims;

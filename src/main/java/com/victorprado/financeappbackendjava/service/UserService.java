@@ -1,20 +1,16 @@
 package com.victorprado.financeappbackendjava.service;
 
 import com.victorprado.financeappbackendjava.domain.enums.MonthEnum;
-import com.victorprado.financeappbackendjava.domain.exception.InvalidSalaryException;
 import com.victorprado.financeappbackendjava.domain.exception.LoggedUserNotFoundInBackup;
 import com.victorprado.financeappbackendjava.domain.repository.CreditCardRepository;
 import com.victorprado.financeappbackendjava.domain.repository.RecurringExpenseRepository;
-import com.victorprado.financeappbackendjava.domain.repository.SalaryRepository;
 import com.victorprado.financeappbackendjava.domain.repository.TransactionRepository;
 import com.victorprado.financeappbackendjava.entrypoint.controller.context.SecurityContext;
 import com.victorprado.financeappbackendjava.service.dto.BackupDTO;
 import com.victorprado.financeappbackendjava.service.dto.ProfileCriteria;
-import com.victorprado.financeappbackendjava.service.dto.SalaryDTO;
 import com.victorprado.financeappbackendjava.service.dto.UserDTO;
 import com.victorprado.financeappbackendjava.service.mapper.CreditCardMapper;
 import com.victorprado.financeappbackendjava.service.mapper.RecurringExpenseMapper;
-import com.victorprado.financeappbackendjava.service.mapper.SalaryMapper;
 import com.victorprado.financeappbackendjava.service.mapper.TransactionMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,8 +35,6 @@ public class UserService {
   private final CreditCardMapper creditCardMapper;
   private final TransactionMapper transactionMapper;
   private final RecurringExpenseMapper recurringExpenseMapper;
-  private final SalaryRepository salaryRepository;
-  private final SalaryMapper salaryMapper;
 
   @Cacheable(cacheNames = "get_user_profile_cache")
   public UserDTO getUser(ProfileCriteria criteria) {
@@ -65,27 +59,11 @@ public class UserService {
     var transactions = transactionRepository.findByUserIdAndInvoiceIsNullAndDateIsBetween(user.getId(),
       from, to);
     var recurringExpenses = recurringExpenseRepository.findByUserId(user.getId());
-    var salary = salaryRepository.findByUserIdAndMonthAndYear(user.getId(), month.name(), from.getYear()).orElse(null);
     log.info("Building user object with all fetched data [user: {}]", user.getEmail());
-    user.setSalary(salaryMapper.toDTO(salary));
     user.setCreditCards(creditCardMapper.toDTO(creditCards));
     user.setTransactions(transactionMapper.toDTO(transactions));
     user.setRecurringExpenses(recurringExpenseMapper.toDTO(recurringExpenses));
     return user;
-  }
-
-  @Transactional
-  public SalaryDTO saveSalary(SalaryDTO salary) {
-    var entity = salaryMapper.toEntity(salary);
-    if (!entity.validate()) {
-      throw new InvalidSalaryException();
-    }
-    if (!entity.isNew()) {
-      entity = salaryRepository.findById(salary.getId()).orElse(entity);
-      entity.setValue(salary.getValue());
-    }
-    var result = salaryRepository.save(entity);
-    return salaryMapper.toDTO(result);
   }
 
   @Transactional
