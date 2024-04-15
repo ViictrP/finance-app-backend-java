@@ -7,11 +7,11 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:postgresql://viaduct.proxy.rlwy.net:55056/finance-app-database?schema=finance_app
-    username: postgres
-    password: a42DabCAGbE244ECfeCBAE4dceBdA4bf
+    url: url
+    username: username
+    password: password
     hikari:
-      schema: finance_app
+      schema: schema
       connectionTimeout: 20000
       maximum-pool-size: 5
 
@@ -23,10 +23,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://securetoken.google.com/finance-app-382403
-          jwk-set-uri: https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com
+          issuer-uri: issuer-uri
+          jwk-set-uri: jwk-set
 
   liquibase:
-    default-schema: finance_app
+    default-schema: schema
     enabled: true
 

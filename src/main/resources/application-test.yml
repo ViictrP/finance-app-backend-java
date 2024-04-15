@@ -27,7 +27,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8080/realms/finance-app/protocol/openid-connect/certs
+          jwk-set-uri: jwk-set-uri
 
   liquibase:
     enabled: true
