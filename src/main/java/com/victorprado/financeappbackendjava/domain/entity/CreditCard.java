@@ -62,4 +62,12 @@ public class CreditCard extends BaseEntity<Long> {
   public boolean validate() {
     return true;
   }
+
+  public void addInvoice(Invoice invoice) {
+    if (this.invoices == null)
+      this.invoices = new ArrayList<>();
+
+    invoice.setCreditCard(this);
+    this.invoices.add(invoice);
+  }
 }

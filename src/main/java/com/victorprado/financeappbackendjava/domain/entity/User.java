@@ -58,4 +58,13 @@ public class User extends BaseEntity<Long> {
         creditCard.setUser(this);
         this.creditCards.add(creditCard);
     }
+
+    public void addTransaction(Transaction transaction) {
+        if (this.transactions == null) {
+            this.transactions = new ArrayList<>();
+        }
+
+        transaction.setUser(this);
+        this.transactions.add(transaction);
+    }
 }

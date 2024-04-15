@@ -1,5 +1,6 @@
 package com.victorprado.financeappbackendjava.domain.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -31,7 +32,7 @@ public class Transaction extends BaseEntity<Long> {
   @NotNull(message = "The date is required")
   private LocalDateTime date;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.PERSIST)
   @JoinColumn(name = "invoice_id")
   private Invoice invoice;
 
