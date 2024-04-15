@@ -25,6 +25,12 @@ public class GlobalExceptionHandler {
       .body(exception.getMessage());
   }
 
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<String> handleCoreExceptions(Exception exception) {
+    return ResponseEntity.status(500)
+            .body("Internal Server Error");
+  }
+
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(MethodArgumentNotValidException.class)

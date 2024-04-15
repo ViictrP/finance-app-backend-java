@@ -20,14 +20,13 @@ import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_USER
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
 @CrossOrigin("*")
-@Secured({ROLE_USER, ROLE_ADMIN})
+//@Secured({ROLE_USER, ROLE_ADMIN})
 public class UserController {
 
   private final UserService service;
 
   @GetMapping("/me")
-  public ResponseEntity<UserDTO> getProfile(
-    ProfileCriteria criteria) {
+  public ResponseEntity<UserDTO> getProfile(ProfileCriteria criteria) {
     log.info("Get profile request received");
     return ResponseEntity.ok(service.getUser(criteria));
   }

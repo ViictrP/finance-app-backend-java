@@ -1,10 +1,12 @@
 package com.victorprado.financeappbackendjava.service;
 
 import com.victorprado.financeappbackendjava.domain.enums.MonthEnum;
+import com.victorprado.financeappbackendjava.domain.exception.CoreException;
 import com.victorprado.financeappbackendjava.domain.exception.LoggedUserNotFoundInBackup;
 import com.victorprado.financeappbackendjava.domain.repository.CreditCardRepository;
 import com.victorprado.financeappbackendjava.domain.repository.RecurringExpenseRepository;
 import com.victorprado.financeappbackendjava.domain.repository.TransactionRepository;
+import com.victorprado.financeappbackendjava.domain.repository.UserRepository;
 import com.victorprado.financeappbackendjava.entrypoint.controller.context.SecurityContext;
 import com.victorprado.financeappbackendjava.service.dto.BackupDTO;
 import com.victorprado.financeappbackendjava.service.dto.ProfileCriteria;
@@ -15,6 +17,7 @@ import com.victorprado.financeappbackendjava.service.mapper.TransactionMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,13 +35,20 @@ public class UserService {
   private final CreditCardRepository creditCardRepository;
   private final TransactionRepository transactionRepository;
   private final RecurringExpenseRepository recurringExpenseRepository;
+  private final UserRepository repository;
+
   private final CreditCardMapper creditCardMapper;
   private final TransactionMapper transactionMapper;
   private final RecurringExpenseMapper recurringExpenseMapper;
 
   @Cacheable(cacheNames = "get_user_profile_cache")
   public UserDTO getUser(ProfileCriteria criteria) {
-    var user = SecurityContext.getUser();
+    var userDTO = SecurityContext.getUser();
+    log.info("Loading user data [user: {}]", userDTO.getEmail());
+
+    var user = repository.findByEmail(userDTO.getEmail())
+            .orElseThrow(() -> new CoreException(HttpStatus.NOT_FOUND, "User not found"));
+
     log.info("Getting credit cards and transactions of the user [user: {}]", user.getEmail());
     var today = LocalDate.now();
     var month = criteria.getMonth() != null ? MonthEnum.getMonth(criteria.getMonth()) : MonthEnum.getMonth(today.getMonthValue());
@@ -60,10 +70,10 @@ public class UserService {
       from, to);
     var recurringExpenses = recurringExpenseRepository.findByUserId(user.getId());
     log.info("Building user object with all fetched data [user: {}]", user.getEmail());
-    user.setCreditCards(creditCardMapper.toDTO(creditCards));
-    user.setTransactions(transactionMapper.toDTO(transactions));
-    user.setRecurringExpenses(recurringExpenseMapper.toDTO(recurringExpenses));
-    return user;
+    userDTO.setCreditCards(creditCardMapper.toDTO(creditCards));
+    userDTO.setTransactions(transactionMapper.toDTO(transactions));
+    userDTO.setRecurringExpenses(recurringExpenseMapper.toDTO(recurringExpenses));
+    return userDTO;
   }
 
   @Transactional
@@ -77,7 +87,6 @@ public class UserService {
       log.info("Converting the credit cards. User ID: {}", userDto.getName());
       var creditCards = creditCardMapper.toEntity(user.getCreditCards());
       creditCards.forEach(creditCard -> {
-        creditCard.setUserId(userDto.getId());
         creditCard.getInvoices().forEach(invoice -> {
           invoice.setCreditCard(creditCard);
           invoice.getTransactions().forEach(transaction -> transaction.setInvoice(invoice));
@@ -90,7 +99,6 @@ public class UserService {
     if (user.getRecurringExpenses() != null) {
       log.info("Converting the recurring expenses. User ID: {}", userDto.getName());
       var recurringExpenses = recurringExpenseMapper.toEntity(user.getRecurringExpenses());
-      recurringExpenses.forEach(recurringExpense -> recurringExpense.setUserId(userDto.getId()));
 
       recurringExpenseRepository.saveAll(recurringExpenses);
     }
@@ -98,7 +106,6 @@ public class UserService {
     if (user.getTransactions() != null) {
       log.info("Converting the transactions. User ID: {}", userDto.getName());
       var transactions = transactionMapper.toEntity(user.getTransactions());
-      transactions.forEach(transaction -> transaction.setUserId(userDto.getId()));
 
       transactionRepository.saveAll(transactions);
     }

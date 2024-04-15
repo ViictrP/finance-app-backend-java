@@ -19,7 +19,7 @@ import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_USER
 @RequestMapping("/v1/credit-cards")
 @RequiredArgsConstructor
 @CrossOrigin("*")
-@Secured({ROLE_USER, ROLE_ADMIN})
+//@Secured({ROLE_USER, ROLE_ADMIN})
 public class CreditCardController {
 
     private final CreditCardService service;

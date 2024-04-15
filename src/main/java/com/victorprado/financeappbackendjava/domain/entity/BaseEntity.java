@@ -14,7 +14,7 @@ import org.hibernate.annotations.Where;
 
 @Getter
 @Setter
-@Where(clause = "delete = false")
+@Where(clause = "deleted = false")
 @MappedSuperclass
 public abstract class BaseEntity<T extends Serializable> {
   @Id

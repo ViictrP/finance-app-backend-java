@@ -19,6 +19,8 @@ public class ResourceServerConfig {
   public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
     http
       .authorizeHttpRequests(authz -> authz.anyRequest().authenticated())
+      .csrf().disable()
+      .cors().and()
       .oauth2ResourceServer()
       .jwt();
     return http.build();

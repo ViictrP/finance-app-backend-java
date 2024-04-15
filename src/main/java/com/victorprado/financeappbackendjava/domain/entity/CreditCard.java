@@ -1,27 +1,24 @@
 package com.victorprado.financeappbackendjava.domain.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@Where(clause = "deleted = false")
 public class CreditCard extends BaseEntity<Long> {
   private static final String DEFAULT_BACKGROUND_COLOR = "bg-zinc-900";
-
-  @NotBlank(message = "The user ID is required")
-  private String userId;
 
   @NotBlank(message = "The title is required")
   private String title;
@@ -41,6 +38,10 @@ public class CreditCard extends BaseEntity<Long> {
   @OneToMany(mappedBy = "creditCard", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<Invoice> invoices;
 
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
   public CreditCard(CreditCard creditCard, Invoice invoice) {
     this.setId(creditCard.getId());
     this.setCreatedAt(creditCard.getCreatedAt());
@@ -49,7 +50,6 @@ public class CreditCard extends BaseEntity<Long> {
     this.invoices = new ArrayList<>();
     this.invoiceClosingDay = creditCard.invoiceClosingDay;
     this.description = creditCard.description;
-    this.userId = creditCard.userId;
     this.title = creditCard.title;
     this.number = creditCard.number;
     this.backgroundColor = creditCard.backgroundColor;

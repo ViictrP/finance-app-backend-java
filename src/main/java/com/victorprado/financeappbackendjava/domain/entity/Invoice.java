@@ -9,12 +9,15 @@ import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 
+import lombok.*;
+
+@Builder
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Invoice extends BaseEntity<Long> {
   private Boolean isClosed = Boolean.FALSE;
   @NotNull(message = "The year is required")

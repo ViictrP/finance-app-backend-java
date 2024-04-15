@@ -5,6 +5,58 @@ databaseChangeLog:
       author: Victor
       changes:
         - createTable:
+            tableName: finance_app_user
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  autoIncrement: false
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: lastname
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValue: "true"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValue: "false"
+                  constraints:
+                    nullable: false
+              - column:
+                  name: delete_date
+                  type: timestamp
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: modificated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+
+        - createTable:
             tableName: credit_card
             columns:
               - column:
@@ -16,9 +68,12 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: user_id
-                  type: varchar(255)
+                  type: bigint
                   constraints:
                     nullable: false
+                    foreignKeyName: fk_user_id_credit_card
+                    referencedColumnNames: id
+                    referencedTableName: finance_app_user
               - column:
                   name: title
                   type: varchar(255)
@@ -47,6 +102,9 @@ databaseChangeLog:
                   type: boolean
                   constraints:
                     nullable: false
+              - column:
+                  name: delete_date
+                  type: timestamp
               - column:
                   name: created_at
                   type: timestamp
@@ -89,14 +147,18 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: month
-                  type: varchar(255)
+                  type: varchar(3)
                   constraints:
                     nullable: false
               - column:
                   name: deleted
                   type: boolean
+                  defaultValue: "false"
                   constraints:
                     nullable: false
+              - column:
+                  name: delete_date
+                  type: timestamp
               - column:
                   name: created_at
                   type: timestamp
@@ -128,9 +190,12 @@ databaseChangeLog:
                     referencedTableName: invoice
               - column:
                   name: user_id
-                  type: varchar(255)
+                  type: bigint
                   constraints:
                     nullable: false
+                    foreignKeyName: fk_user_id_transaction
+                    referencedColumnNames: id
+                    referencedTableName: finance_app_user
               - column:
                   name: description
                   type: varchar(255)
@@ -166,8 +231,12 @@ databaseChangeLog:
               - column:
                   name: deleted
                   type: boolean
+                  defaultValue: "false"
                   constraints:
                     nullable: false
+              - column:
+                  name: delete_date
+                  type: timestamp
               - column:
                   name: created_at
                   type: timestamp
@@ -191,9 +260,12 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: user_id
-                  type: varchar(255)
+                  type: bigint
                   constraints:
                     nullable: false
+                    foreignKeyName: fk_user_id_recuring_expense
+                    referencedColumnNames: id
+                    referencedTableName: finance_app_user
               - column:
                   name: description
                   type: varchar(255)
@@ -212,8 +284,12 @@ databaseChangeLog:
               - column:
                   name: deleted
                   type: boolean
+                  defaultValue: "false"
                   constraints:
                     nullable: false
+              - column:
+                  name: delete_date
+                  type: timestamp
               - column:
                   name: created_at
                   type: timestamp
@@ -228,7 +304,7 @@ databaseChangeLog:
         - addUniqueConstraint:
             catalogName: cat
             columnNames: number, user_id
-            constraintName: unique_number_finance_app_user_id_credit_card
+            constraintName: unique_number_user_id_credit_card
             initiallyDeferred: true
             tableName: credit_card
             validate: true

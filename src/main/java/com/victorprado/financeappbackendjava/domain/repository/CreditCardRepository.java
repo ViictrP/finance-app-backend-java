@@ -10,7 +10,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CreditCardRepository extends JpaRepository<CreditCard, Long> {
 
-  @Query("select new CreditCard(c, i) from CreditCard c left outer join Invoice i on i.creditCard = c and i.month = :month and i.year = :year where c.userId = :userId")
-  List<CreditCard> findByUserAndInvoicesByMonthAndYear(@Param("userId") String userId,
+  @Query("select new CreditCard(c, i) from CreditCard c left outer join Invoice i on i.creditCard = c and i.month = :month and i.year = :year where c.user.id = :userId")
+  List<CreditCard> findByUserAndInvoicesByMonthAndYear(@Param("userId") Long userId,
     @Param("month") String month, @Param("year") Integer year);
+
+  boolean existsByNumber(String number);
 }

@@ -15,9 +15,6 @@ import lombok.Setter;
 @Setter
 public class Transaction extends BaseEntity<Long> {
 
-  @NotBlank(message = "The user ID is required")
-  private String userId;
-
   @NotBlank(message = "The description is required")
   private String description;
 
@@ -34,9 +31,13 @@ public class Transaction extends BaseEntity<Long> {
   @NotNull(message = "The date is required")
   private LocalDateTime date;
 
-  @ManyToOne()
+  @ManyToOne
   @JoinColumn(name = "invoice_id")
   private Invoice invoice;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 
   @Override
   public boolean validate() {
