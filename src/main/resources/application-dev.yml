@@ -7,11 +7,11 @@ logging:
 
 spring:
   datasource:
-    url: url
-    username: username
-    password: password
+    url: ${DATABASE_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     hikari:
-      schema: schema
+      schema: ${SCHEMA}
       connectionTimeout: 20000
       maximum-pool-size: 5
 
@@ -23,10 +23,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: issuer-uri
-          jwk-set-uri: jwk-set
+          issuer-uri: ${ISSUER_URI}
+          jwk-set-uri: ${JWK_SET_URI}
 
   liquibase:
-    default-schema: schema
+    default-schema: ${SCHEMA}
     enabled: true
 
