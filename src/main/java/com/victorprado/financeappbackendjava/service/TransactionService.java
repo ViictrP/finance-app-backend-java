@@ -52,7 +52,7 @@ public class TransactionService {
         }
 
         var entity = mapper.toEntity(dto);
-        user.addTransaction(entity);
+        entity.setUser(user);
         var saved = repository.save(entity);
         return mapper.toDTO(saved);
     }
@@ -80,7 +80,7 @@ public class TransactionService {
 
             newTransaction.setAmount(dto.getAmount());
             newTransaction.setCategory(dto.getCategory());
-            user.addTransaction(newTransaction);
+            newTransaction.setUser(user);
 
             if (dto.getInstallmentNumber() > 1) {
                 newTransaction.setIsInstallment(true);
@@ -121,13 +121,11 @@ public class TransactionService {
                 .orElse(Invoice
                         .builder()
                         .month(nextMonth)
+                        .creditCard(creditCard)
                         .year(year)
                         .isClosed(false)
                         .build());
 
-        invoice.addTransaction(newTransaction);
-        if (invoice.isNew()) {
-            creditCard.addInvoice(invoice);
-        }
+        newTransaction.setInvoice(invoice);
     }
 }
