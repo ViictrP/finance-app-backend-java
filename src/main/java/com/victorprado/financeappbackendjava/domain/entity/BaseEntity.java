@@ -22,6 +22,7 @@ public abstract class BaseEntity<T extends Serializable> {
   private T id;
   private LocalDateTime createdAt;
   private LocalDateTime modificatedAt;
+  private LocalDateTime deleteDate;
   private boolean deleted = false;
 
   public boolean isNew() {
@@ -37,6 +38,9 @@ public abstract class BaseEntity<T extends Serializable> {
   @PreUpdate
   public void preUpdate() {
     this.modificatedAt = LocalDateTime.now();
+    if (this.deleted) {
+      this.deleteDate = LocalDateTime.now();
+    }
   }
 
   public abstract boolean validate();

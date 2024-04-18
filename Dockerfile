@@ -1,12 +1,20 @@
 FROM openjdk:18
-COPY ./target/*.jar /app.jar
+COPY . ./app
+WORKDIR app
+
+RUN chmod +x ./mvnw && ./mvnw clean install -DskipTests
+
+COPY target/*.jar app.jar
 
 ENV PORT=$PORT
 ENV DATABASE_URL=$DATABASE_URL
 ENV DB_USER=$DB_USER
 ENV DB_PASSWORD=$DB_PASSWORD
 ENV ISSUER_URI=$ISSUER_URI
-ENV ISSUER_REALM=$ISSUER_HOST
+ENV JWK_SET_URI=$JWK_SET_URI
+ENV SCHEMA=$SCHEMA
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+RUN ls
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
 EXPOSE $PORT

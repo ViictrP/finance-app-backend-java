@@ -7,6 +7,7 @@ import com.victorprado.financeappbackendjava.domain.repository.CreditCardReposit
 import com.victorprado.financeappbackendjava.domain.repository.UserRepository;
 import com.victorprado.financeappbackendjava.entrypoint.controller.context.SecurityContext;
 import com.victorprado.financeappbackendjava.service.dto.CreditCardDTO;
+import com.victorprado.financeappbackendjava.service.dto.UpdateCreditCardDTO;
 import com.victorprado.financeappbackendjava.service.mapper.CreditCardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,13 +30,7 @@ public class CreditCardService {
 
     @Transactional
     public CreditCardDTO create(CreditCardDTO dto) {
-        log.info("Validating the credit card {} information", dto.getTitle());
-        var hasCreditCard = repository.existsByNumber(dto.getNumber());
-
-        if (hasCreditCard) {
-            log.info("The credit card {} already exists", dto.getTitle());
-            throw new CreditCardAlreadyExistsException();
-        }
+        validateCreditCardNumber(dto.getNumber());
 
         log.info("Converting the credit card {}", dto.getTitle());
         var entity = mapper.toEntity(dto);
@@ -60,5 +55,34 @@ public class CreditCardService {
         log.info("Creating the credit card {}", dto.getTitle());
         repository.save(entity);
         return mapper.toDTO(entity);
+    }
+    
+    @Transactional
+    public CreditCardDTO update(Long creditCardId, UpdateCreditCardDTO dto) {
+        validateCreditCardNumber(dto.getNumber());
+
+        log.info("Loading the credit card {} information", dto.getTitle());
+        var creditCard = repository.findById(creditCardId)
+                .orElseThrow(UserNotFoundException::new);
+
+        creditCard.setDescription(dto.getDescription());
+        creditCard.setBackgroundColor(dto.getBackgroundColor());
+        creditCard.setInvoiceClosingDay(dto.getInvoiceClosingDay() != null ? dto.getInvoiceClosingDay() : creditCard.getInvoiceClosingDay());
+        creditCard.setTitle(dto.getTitle());
+        creditCard.setNumber(dto.getNumber() != null ? dto.getNumber() : creditCard.getNumber());
+
+        log.info("Saving the credit card {} information", dto.getTitle());
+        var savedCreditCard = repository.save(creditCard);
+        return mapper.toDTOWithoutInvoices(savedCreditCard);
+    }
+
+    private void validateCreditCardNumber(String number) {
+        log.info("Validating the credit card {} number", number);
+        var hasCreditCard = repository.existsByNumber(number);
+
+        if (hasCreditCard) {
+            log.info("The credit card {} already exists", number);
+            throw new CreditCardAlreadyExistsException();
+        }
     }
 }

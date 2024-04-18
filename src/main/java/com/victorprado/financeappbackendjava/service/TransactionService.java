@@ -57,6 +57,16 @@ public class TransactionService {
         return mapper.toDTO(saved);
     }
 
+    @Transactional
+    public void delete(Long transactionId) {
+        log.info("Loading the transaction {} data", transactionId);
+        var transaction = repository.findById(transactionId)
+                .orElseThrow(UserNotFoundException::new);
+
+        transaction.delete();
+        repository.save(transaction);
+    }
+
     private TransactionDTO createInvoiceTransaction(TransactionDTO dto, CreditCard creditCard, User user) {
         log.info("Creating installment transactions {}", dto.getDescription());
         var yearsIncrement = 0;

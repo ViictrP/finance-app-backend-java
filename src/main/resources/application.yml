@@ -1,27 +1,34 @@
 server:
   port: ${PORT}
 
+logging:
+  level:
+    root: INFO
+
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: validate
   datasource:
-    type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://${DATABASE_URL}
+    url: ${DATABASE_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 30
-      minimum-idle: 10
       schema: ${SCHEMA}
+      connectionTimeout: 20000
+      maximum-pool-size: 5
+
+  jpa:
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: https://${ISSUER_URI}/realms/${ISSUER_REALM}/protocol/openid-connect/certs
+          issuer-uri: ${ISSUER_URI}
+          jwk-set-uri: ${JWK_SET_URI}
 
   liquibase:
     default-schema: ${SCHEMA}
-    contexts: local
     enabled: true
+

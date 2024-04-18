@@ -5,6 +5,7 @@ import com.victorprado.financeappbackendjava.service.dto.TransactionDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +22,18 @@ public class TransactionController {
 
     @PostMapping
     public ResponseEntity<TransactionDTO> create(@Valid @RequestBody TransactionDTO dto) {
-        log.info("Create credit card {} request received", dto.getDescription());
+        log.info("Create transaction {} request received", dto.getDescription());
         var created = service.create(dto);
+        log.info("Transaction {} created!", dto.getDescription());
         return ResponseEntity.created(URI.create("/v1/transactions/" + created.getId()))
                 .body(created);
+    }
+
+    @DeleteMapping("/{transactionId}")
+    public ResponseEntity<Void> delete(@PathVariable Long transactionId) {
+        log.info("Delete transaction {} request received", transactionId);
+        service.delete(transactionId);
+        log.info("Transaction {} deleted!", transactionId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

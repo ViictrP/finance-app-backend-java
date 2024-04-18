@@ -12,6 +12,9 @@ import org.hibernate.annotations.Where;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
+
 @Entity
 @Getter
 @Setter
@@ -35,7 +38,7 @@ public class CreditCard extends BaseEntity<Long> {
 
   private String backgroundColor = DEFAULT_BACKGROUND_COLOR;
 
-  @OneToMany(mappedBy = "creditCard", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "creditCard", cascade = {PERSIST,REMOVE}, fetch = FetchType.LAZY)
   private List<Invoice> invoices;
 
   @ManyToOne

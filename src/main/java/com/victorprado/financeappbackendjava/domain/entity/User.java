@@ -1,6 +1,5 @@
 package com.victorprado.financeappbackendjava.domain.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
@@ -12,6 +11,8 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import static jakarta.persistence.CascadeType.REMOVE;
 
 @Builder
 @Entity(name = "finance_app_user")
@@ -36,13 +37,13 @@ public class User extends BaseEntity<Long> {
 
     private Boolean active;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = REMOVE, fetch = FetchType.LAZY)
     private List<CreditCard> creditCards;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = REMOVE, fetch = FetchType.LAZY)
     private List<Transaction> transactions;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = REMOVE, fetch = FetchType.LAZY)
     private List<RecurringExpense> recurringExpenses;
 
     @Override

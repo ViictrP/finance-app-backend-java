@@ -44,4 +44,8 @@ public class Transaction extends BaseEntity<Long> {
   public boolean validate() {
     return true;
   }
+
+  public void delete() {
+    this.setDeleted(true);
+  }
 }
