@@ -95,7 +95,7 @@ public class TransactionService {
             if (dto.getInstallmentNumber() > 1) {
                 newTransaction.setIsInstallment(true);
                 newTransaction.setDescription(dto.getDescription() + " (" + (i + 1) + "/" + dto.getInstallmentNumber() + ")");
-                newTransaction.setInstallmentNumber(i);
+                newTransaction.setInstallmentNumber(i + 1);
                 newTransaction.setInstallmentAmount(dto.getInstallmentNumber());
                 newTransaction.setInstallmentId(installmentId);
             } else {
