@@ -3,6 +3,7 @@ COPY . /usr/src/app
 WORKDIR /usr/src/app
 
 RUN chmod +x ./mvnw && ./mvnw clean install -DskipTests
+RUN ls -a
 
 COPY ./target/finance-app-backend-java-0.0.1-SNAPSHOT.jar ./app.jar
 
