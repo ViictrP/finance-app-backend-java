@@ -1,6 +1,6 @@
 FROM openjdk:18
-COPY . ./app
-WORKDIR app
+COPY . /usr/src/app
+WORKDIR /usr/src/app
 
 RUN chmod +x ./mvnw && ./mvnw clean install -DskipTests
 
