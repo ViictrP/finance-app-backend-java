@@ -4,7 +4,9 @@ import com.victorprado.financeappbackendjava.domain.entity.CreditCard;
 import com.victorprado.financeappbackendjava.domain.entity.Invoice;
 import com.victorprado.financeappbackendjava.domain.entity.Transaction;
 import com.victorprado.financeappbackendjava.domain.entity.User;
+import com.victorprado.financeappbackendjava.domain.exception.CreditCardNotFoundException;
 import com.victorprado.financeappbackendjava.domain.exception.UserNotFoundException;
+import com.victorprado.financeappbackendjava.domain.exception.TransactionNotFoundException;
 import com.victorprado.financeappbackendjava.domain.repository.CreditCardRepository;
 import com.victorprado.financeappbackendjava.domain.repository.InvoiceRepository;
 import com.victorprado.financeappbackendjava.domain.repository.TransactionRepository;
@@ -45,7 +47,7 @@ public class TransactionService {
         if (dto.getCreditCardId() != null) {
             log.info("Loading credit cards's {} data", dto.getCreditCardId());
             var creditCard = creditCardRepository.findById(dto.getCreditCardId())
-                    .orElseThrow(UserNotFoundException::new);
+                    .orElseThrow(CreditCardNotFoundException::new);
 
             log.info("Creating invoice's transaction {}", dto.getDescription());
             return createInvoiceTransaction(dto, creditCard, user);
@@ -61,7 +63,7 @@ public class TransactionService {
     public void delete(Long transactionId) {
         log.info("Loading the transaction {} data", transactionId);
         var transaction = repository.findById(transactionId)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(TransactionNotFoundException::new);
 
         transaction.delete();
         repository.save(transaction);

@@ -6,6 +6,7 @@ import com.victorprado.financeappbackendjava.service.dto.UpdateCreditCardDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +42,13 @@ public class CreditCardController {
         log.info("Credit card {} updated!", dto.getTitle());
         return ResponseEntity.created(URI.create("/v1/credit-cards/" + created.getId()))
                 .body(created);
+    }
+
+    @DeleteMapping("/{creditCardId}")
+    public ResponseEntity<Void> delete(@PathVariable Long creditCardId) {
+        log.info("Delete credit card {} request received", creditCardId);
+        service.delete(creditCardId);
+        log.info("Credit card {} deleted!", creditCardId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

@@ -3,6 +3,7 @@ package com.victorprado.financeappbackendjava.entrypoint.controller;
 import com.victorprado.financeappbackendjava.service.UserService;
 import com.victorprado.financeappbackendjava.service.dto.BackupDTO;
 import com.victorprado.financeappbackendjava.service.dto.ProfileCriteria;
+import com.victorprado.financeappbackendjava.service.dto.UserBalanceDTO;
 import com.victorprado.financeappbackendjava.service.dto.UserDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,5 +38,12 @@ public class UserController {
     log.info("Backup request received");
     service.importBackup(backup);
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/balance")
+  public ResponseEntity<UserBalanceDTO> getBalance(ProfileCriteria criteria) {
+    log.info("Balance request received");
+    var balance = service.getUserBalance(criteria);
+    return ResponseEntity.ok().body(balance);
   }
 }

@@ -76,6 +76,17 @@ public class CreditCardService {
         return mapper.toDTOWithoutInvoices(savedCreditCard);
     }
 
+    @Transactional
+    public void delete(Long creditCardId) {
+        log.info("Loading the credit card information");
+        var creditCard = repository.findById(creditCardId)
+                .orElseThrow(UserNotFoundException::new);
+
+        creditCard.setDeleted(true);
+        log.info("Deleting the credit card {}", creditCard.getTitle());
+        repository.save(creditCard);
+    }
+
     private void validateCreditCardNumber(String number) {
         log.info("Validating the credit card {} number", number);
         var hasCreditCard = repository.existsByNumber(number);
