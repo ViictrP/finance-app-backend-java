@@ -1,11 +1,12 @@
-FROM openjdk:18
+FROM maven:3-openjdk-18 as mvn
 COPY . ./usr/src/app
 WORKDIR ./usr/src/app
 
-RUN chmod +x ./mvnw && ./mvnw clean install -DskipTests
-RUN dir -s
+RUN mvn clean install -DskipTests
 
-COPY ./target/finance-app-backend-java-0.0.1-SNAPSHOT.jar ./app.jar
+FROM openjdk:18 as java
+WORKDIR ./usr/src/app
+COPY --from=mvn /usr/src/app/target/finance-app-backend-java-0.0.1-SNAPSHOT.jar ./app.jar
 
 ENV PORT=$PORT
 ENV DATABASE_URL=$DATABASE_URL
