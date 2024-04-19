@@ -28,6 +28,7 @@ public class Transaction extends BaseEntity<Long> {
   private Boolean isInstallment = false;
   private Integer installmentNumber;
   private String installmentId;
+  private Integer installmentAmount;
 
   @NotNull(message = "The date is required")
   private LocalDateTime date;
