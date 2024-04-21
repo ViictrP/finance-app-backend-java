@@ -1,4 +1,4 @@
-package com.victorprado.financeappbackendjava.entrypoint.controller.context;
+package com.victorprado.financeappbackendjava.service.context;
 
 import com.victorprado.financeappbackendjava.service.dto.UserDTO;
 import lombok.AccessLevel;

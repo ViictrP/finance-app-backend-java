@@ -1,17 +1,16 @@
-package com.victorprado.financeappbackendjava.entrypoint.controller.context;
+package com.victorprado.financeappbackendjava.service.context;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.victorprado.financeappbackendjava.entrypoint.controller.context.ContextTestHelper.mockSecurity;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SecurityContextTest {
 
     @BeforeEach
     public void beforeEach() {
-        mockSecurity();
+        ContextTestHelper.mockSecurity();
     }
 
     @Test

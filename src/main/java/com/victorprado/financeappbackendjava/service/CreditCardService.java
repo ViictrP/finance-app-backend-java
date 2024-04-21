@@ -5,7 +5,7 @@ import com.victorprado.financeappbackendjava.domain.exception.CreditCardAlreadyE
 import com.victorprado.financeappbackendjava.domain.exception.UserNotFoundException;
 import com.victorprado.financeappbackendjava.domain.repository.CreditCardRepository;
 import com.victorprado.financeappbackendjava.domain.repository.UserRepository;
-import com.victorprado.financeappbackendjava.entrypoint.controller.context.SecurityContext;
+import com.victorprado.financeappbackendjava.service.context.SecurityContext;
 import com.victorprado.financeappbackendjava.service.dto.CreditCardDTO;
 import com.victorprado.financeappbackendjava.service.dto.UpdateCreditCardDTO;
 import com.victorprado.financeappbackendjava.service.mapper.CreditCardMapper;

@@ -11,7 +11,7 @@ import com.victorprado.financeappbackendjava.domain.repository.CreditCardReposit
 import com.victorprado.financeappbackendjava.domain.repository.InvoiceRepository;
 import com.victorprado.financeappbackendjava.domain.repository.TransactionRepository;
 import com.victorprado.financeappbackendjava.domain.repository.UserRepository;
-import com.victorprado.financeappbackendjava.entrypoint.controller.context.SecurityContext;
+import com.victorprado.financeappbackendjava.service.context.SecurityContext;
 import com.victorprado.financeappbackendjava.service.dto.TransactionDTO;
 import com.victorprado.financeappbackendjava.service.mapper.TransactionMapper;
 import lombok.RequiredArgsConstructor;

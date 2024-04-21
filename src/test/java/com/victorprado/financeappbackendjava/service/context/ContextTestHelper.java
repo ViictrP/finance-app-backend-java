@@ -1,4 +1,4 @@
-package com.victorprado.financeappbackendjava.entrypoint.controller.context;
+package com.victorprado.financeappbackendjava.service.context;
 
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;

@@ -4,7 +4,7 @@ import com.victorprado.financeappbackendjava.domain.exception.RecurringExpenseNo
 import com.victorprado.financeappbackendjava.domain.exception.UserNotFoundException;
 import com.victorprado.financeappbackendjava.domain.repository.RecurringExpenseRepository;
 import com.victorprado.financeappbackendjava.domain.repository.UserRepository;
-import com.victorprado.financeappbackendjava.entrypoint.controller.context.SecurityContext;
+import com.victorprado.financeappbackendjava.service.context.SecurityContext;
 import com.victorprado.financeappbackendjava.service.dto.RecurringExpenseDTO;
 import com.victorprado.financeappbackendjava.service.dto.UpdateRecurringExpenseDTO;
 import com.victorprado.financeappbackendjava.service.mapper.RecurringExpenseMapper;
