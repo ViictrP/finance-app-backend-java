@@ -76,11 +76,11 @@ public class TransactionService {
         var installments = new ArrayList<Transaction>();
 
         log.info("Calculating transaction {}'s amount for the installment number", dto.getDescription());
-        var transactionAmount = dto.getAmount().divide(BigDecimal.valueOf(dto.getInstallmentNumber()), RoundingMode.FLOOR);
+        var transactionAmount = dto.getAmount().divide(BigDecimal.valueOf(dto.getInstallmentAmount()), RoundingMode.FLOOR);
         dto.setAmount(transactionAmount);
         var monthIndex = dto.getDate().getMonthValue();
 
-        for (var i = 0; i < dto.getInstallmentNumber(); i++) {
+        for (var i = 0; i < dto.getInstallmentAmount(); i++) {
             var newTransaction = new Transaction();
 
             if (monthIndex > 12) {
@@ -94,11 +94,11 @@ public class TransactionService {
             newTransaction.setCategory(dto.getCategory());
             newTransaction.setUser(user);
 
-            if (dto.getInstallmentNumber() > 1) {
+            if (dto.getInstallmentAmount() > 1) {
                 newTransaction.setIsInstallment(true);
-                newTransaction.setDescription(dto.getDescription() + " (" + (i + 1) + "/" + dto.getInstallmentNumber() + ")");
+                newTransaction.setDescription(dto.getDescription());
                 newTransaction.setInstallmentNumber(i + 1);
-                newTransaction.setInstallmentAmount(dto.getInstallmentNumber());
+                newTransaction.setInstallmentAmount(dto.getInstallmentAmount());
                 newTransaction.setInstallmentId(installmentId);
             } else {
                 newTransaction.setDescription(dto.getDescription());

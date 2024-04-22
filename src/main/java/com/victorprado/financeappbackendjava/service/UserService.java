@@ -1,5 +1,6 @@
 package com.victorprado.financeappbackendjava.service;
 
+import com.victorprado.financeappbackendjava.domain.entity.RecurringExpense;
 import com.victorprado.financeappbackendjava.domain.entity.Transaction;
 import com.victorprado.financeappbackendjava.domain.enums.MonthEnum;
 import com.victorprado.financeappbackendjava.domain.exception.CoreException;
@@ -121,14 +122,13 @@ public class UserService {
     public UserBalanceDTO getUserBalance(ProfileCriteria criteria) {
         var userDTO = SecurityContext.getUser();
         log.info("Loading user data [user: {}]", userDTO.getEmail());
-
         var user = repository.findByEmail(userDTO.getEmail())
                 .orElseThrow(() -> new CoreException(HttpStatus.NOT_FOUND, "User not found"));
 
         log.info("Getting credit cards and transactions of the user [user: {}]", user.getEmail());
         var today = LocalDate.now();
         var month = criteria.getMonth() != null ? MonthEnum.getMonth(criteria.getMonth()) : MonthEnum.getMonth(today.getMonthValue());
-        var year = criteria.getYear() != null ? criteria.getYear() : today.getYear();
+        var year = criteria.getYear();
         var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(user.getId(), month.name(), year);
 
         final var creditCardsTotal = new BigDecimal[]{BigDecimal.ZERO};
@@ -145,16 +145,39 @@ public class UserService {
             creditCardsTotal[0] = creditCardsTotal[0].add(amount);
         });
 
-        var expenses = user.getTransactions().stream()
+        var from = today
+                .withYear(year)
+                .withMonth(month.getIndex())
+                .with(firstDayOfMonth()).atStartOfDay();
+
+        var to = today
+                .withMonth(month.getIndex())
+                .withYear(year)
+                .with(lastDayOfMonth())
+                .atTime(23, 59, 59);
+
+        var transactions = transactionRepository.findByUserIdAndInvoiceIsNullAndDateIsBetween(user.getId(), from, to);
+        var transactionsTotal = transactions.stream()
                 .map(Transaction::getAmount)
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
 
+        var recurringExpenses = recurringExpenseRepository.findByUserId(user.getId());
+        var recurringExpensesTotal = recurringExpenses.stream()
+                .map(RecurringExpense::getAmount)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+
+        var expenses = creditCardsTotal[0].add(transactionsTotal).add(recurringExpensesTotal);
+
         return UserBalanceDTO.builder()
-                .expenses(creditCardsTotal[0].add(expenses))
+                .expenses(expenses)
                 .salary(user.getSalary())
-                .available(user.getSalary().subtract((expenses.add(creditCardsTotal[0]))))
+                .available(user.getSalary().subtract(expenses))
                 .creditCardExpenses(creditCardsAmounts)
+                .creditCards(creditCardMapper.toDTO(creditCards))
+                .transactions(transactionMapper.toDTO(transactions))
+                .recurringExpenses(recurringExpenseMapper.toDTO(recurringExpenses))
                 .build();
     }
 }

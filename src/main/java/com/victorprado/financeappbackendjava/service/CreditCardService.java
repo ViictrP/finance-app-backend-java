@@ -59,11 +59,13 @@ public class CreditCardService {
     
     @Transactional
     public CreditCardDTO update(Long creditCardId, UpdateCreditCardDTO dto) {
-        validateCreditCardNumber(dto.getNumber());
-
         log.info("Loading the credit card {} information", dto.getTitle());
         var creditCard = repository.findById(creditCardId)
                 .orElseThrow(UserNotFoundException::new);
+
+        if (!creditCard.getNumber().equals(dto.getNumber())) {
+            validateCreditCardNumber(dto.getNumber());
+        }
 
         creditCard.setDescription(dto.getDescription());
         creditCard.setBackgroundColor(dto.getBackgroundColor());

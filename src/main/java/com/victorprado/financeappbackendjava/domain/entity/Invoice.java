@@ -1,11 +1,6 @@
 package com.victorprado.financeappbackendjava.domain.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -35,6 +30,7 @@ public class Invoice extends BaseEntity<Long> {
   private CreditCard creditCard;
 
   @OneToMany(mappedBy = "invoice", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+  @OrderBy("date")
   private List<Transaction> transactions;
 
   @Override

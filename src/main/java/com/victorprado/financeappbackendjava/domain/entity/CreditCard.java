@@ -39,6 +39,7 @@ public class CreditCard extends BaseEntity<Long> {
   private String backgroundColor = DEFAULT_BACKGROUND_COLOR;
 
   @OneToMany(mappedBy = "creditCard", cascade = {PERSIST,REMOVE}, fetch = FetchType.LAZY)
+  @OrderBy("id")
   private List<Invoice> invoices;
 
   @ManyToOne

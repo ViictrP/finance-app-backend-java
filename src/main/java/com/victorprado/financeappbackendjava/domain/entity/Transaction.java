@@ -10,10 +10,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @Setter
+@Where(clause = "deleted = false")
 public class Transaction extends BaseEntity<Long> {
 
   @NotBlank(message = "The description is required")

@@ -22,8 +22,9 @@ public class TransactionDTO extends BaseDTO {
   private BigDecimal amount;
 
   private Boolean isInstallment = false;
-  private Integer installmentNumber;
+  private Integer installmentAmount;
   private String installmentId;
+  private Integer installmentNumber;
 
   private Long creditCardId;
 

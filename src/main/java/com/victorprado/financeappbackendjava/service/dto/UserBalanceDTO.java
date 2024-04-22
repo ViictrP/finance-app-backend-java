@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -15,4 +16,7 @@ public class UserBalanceDTO {
     private BigDecimal expenses;
     private BigDecimal available;
     private Map<Long, BigDecimal> creditCardExpenses;
+    private List<TransactionDTO> transactions;
+    private List<RecurringExpenseDTO> recurringExpenses;
+    private List<CreditCardDTO> creditCards;
 }

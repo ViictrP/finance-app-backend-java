@@ -3,6 +3,7 @@ package com.victorprado.financeappbackendjava.domain.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -38,12 +39,15 @@ public class User extends BaseEntity<Long> {
     private Boolean active;
 
     @OneToMany(mappedBy = "user", cascade = REMOVE, fetch = FetchType.LAZY)
+    @OrderBy("id")
     private List<CreditCard> creditCards;
 
     @OneToMany(mappedBy = "user", cascade = REMOVE, fetch = FetchType.LAZY)
+    @OrderBy("date")
     private List<Transaction> transactions;
 
     @OneToMany(mappedBy = "user", cascade = REMOVE, fetch = FetchType.LAZY)
+    @OrderBy("createdAt")
     private List<RecurringExpense> recurringExpenses;
 
     @Override

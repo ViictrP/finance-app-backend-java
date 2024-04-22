@@ -1,7 +1,10 @@
 package com.victorprado.financeappbackendjava.entrypoint.controller;
 
 import com.victorprado.financeappbackendjava.service.CreditCardService;
+import com.victorprado.financeappbackendjava.service.InvoiceService;
 import com.victorprado.financeappbackendjava.service.dto.CreditCardDTO;
+import com.victorprado.financeappbackendjava.service.dto.InvoiceCriteria;
+import com.victorprado.financeappbackendjava.service.dto.InvoiceDTO;
 import com.victorprado.financeappbackendjava.service.dto.UpdateCreditCardDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +15,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_ADMIN;
 import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_USER;
@@ -25,6 +29,7 @@ import static com.victorprado.financeappbackendjava.domain.roles.Roles.ROLE_USER
 public class CreditCardController {
 
     private final CreditCardService service;
+    private final InvoiceService invoiceService;
 
     @PostMapping
     public ResponseEntity<CreditCardDTO> create(@Valid @RequestBody CreditCardDTO dto) {
@@ -50,5 +55,12 @@ public class CreditCardController {
         service.delete(creditCardId);
         log.info("Credit card {} deleted!", creditCardId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/{creditCardId}/invoices")
+    public ResponseEntity<List<InvoiceDTO>> getInvoices(@PathVariable Long creditCardId, InvoiceCriteria criteria) {
+        log.info("Get invoices request received");
+        criteria.setCreditCardId(creditCardId);
+        return ResponseEntity.ok(invoiceService.getInvoices(criteria));
     }
 }
