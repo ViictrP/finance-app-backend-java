@@ -2,11 +2,21 @@ package com.victorprado.financeappbackendjava.domain.repository;
 
 import com.victorprado.financeappbackendjava.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
+
+    @Query(value = """
+            select u.*
+            from finance_app_user u
+                      inner join user_property up on u.id = up.user_id
+            where up.property_name = 'MONTH_CLOSURE_DAY' and up.property_value = :dayOfTheMonth""", nativeQuery = true)
+    List<User> findAllUsersWithMonthClosureToday(@Param("dayOfTheMonth") String dayOfTheMonth);
 }

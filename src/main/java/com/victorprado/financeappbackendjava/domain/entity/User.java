@@ -1,9 +1,6 @@
 package com.victorprado.financeappbackendjava.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +8,9 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static jakarta.persistence.CascadeType.REMOVE;
 
@@ -53,6 +52,12 @@ public class User extends BaseEntity<Long> {
     @OneToMany(mappedBy = "user", cascade = REMOVE, fetch = FetchType.LAZY)
     @OrderBy("index DESC")
     private List<MonthClosure> monthClosures;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "user_property", joinColumns = @JoinColumn(name = "user_id"))
+    @MapKeyColumn(name = "property_name", length = 100)
+    @Column(name = "property_value", length = 500)
+    private Map<String, @NotBlank String> properties = new HashMap<>();
 
     @Override
     public boolean validate() {

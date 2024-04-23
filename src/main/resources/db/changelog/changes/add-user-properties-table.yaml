@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10
+      author: Victor
+      changes:
+        - createTable:
+            tableName: user_property
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_id_user_property
+                    referencedColumnNames: id
+                    referencedTableName: finance_app_user
+              - column:
+                  name: property_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: property_value
+                  type: varchar(500)
+                  constraints:
+                    nullable: false
