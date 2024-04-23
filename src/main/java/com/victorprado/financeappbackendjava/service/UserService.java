@@ -75,7 +75,7 @@ public class UserService {
                 from, to);
         var recurringExpenses = recurringExpenseRepository.findByUserId(user.getId());
 
-        var monthClosures = monthClosureRepository.findLastFive(user);
+        var monthClosures = monthClosureRepository.findLastFiveByYear(user, today.getYear());
 
         log.info("Building user object with all fetched data [user: {}]", user.getEmail());
         userDTO.setCreditCards(creditCardMapper.toDTO(creditCards));

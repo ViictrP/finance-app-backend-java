@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface MonthClosureRepository extends JpaRepository<MonthClosure, Long> {
 
-    @Query("select m from MonthClosure m where m.user = :user order by m.index limit 5")
-    List<MonthClosure> findLastFive(User user);
+    @Query("select m from MonthClosure m where m.user = :user and m.year = :year order by m.index limit 5")
+    List<MonthClosure> findLastFiveByYear(User user, Integer year);
 }
