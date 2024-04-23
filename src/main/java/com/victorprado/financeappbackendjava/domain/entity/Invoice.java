@@ -30,7 +30,7 @@ public class Invoice extends BaseEntity<Long> {
   private CreditCard creditCard;
 
   @OneToMany(mappedBy = "invoice", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-  @OrderBy("date")
+  @OrderBy("date DESC")
   private List<Transaction> transactions;
 
   @Override

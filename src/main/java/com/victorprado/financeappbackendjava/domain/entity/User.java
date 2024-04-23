@@ -43,12 +43,16 @@ public class User extends BaseEntity<Long> {
     private List<CreditCard> creditCards;
 
     @OneToMany(mappedBy = "user", cascade = REMOVE, fetch = FetchType.LAZY)
-    @OrderBy("date")
+    @OrderBy("date DESC")
     private List<Transaction> transactions;
 
     @OneToMany(mappedBy = "user", cascade = REMOVE, fetch = FetchType.LAZY)
-    @OrderBy("createdAt")
+    @OrderBy("createdAt DESC")
     private List<RecurringExpense> recurringExpenses;
+
+    @OneToMany(mappedBy = "user", cascade = REMOVE, fetch = FetchType.LAZY)
+    @OrderBy("index DESC")
+    private List<MonthClosure> monthClosures;
 
     @Override
     public boolean validate() {

@@ -25,4 +25,5 @@ public class UserDTO {
   private List<TransactionDTO> transactions = new ArrayList<>();
   @Valid
   private List<RecurringExpenseDTO> recurringExpenses = new ArrayList<>();
+  private List<MonthClosureDTO> monthClosures = new ArrayList<>();
 }

@@ -5,16 +5,14 @@ import com.victorprado.financeappbackendjava.domain.entity.Transaction;
 import com.victorprado.financeappbackendjava.domain.enums.MonthEnum;
 import com.victorprado.financeappbackendjava.domain.exception.CoreException;
 import com.victorprado.financeappbackendjava.domain.exception.LoggedUserNotFoundInBackup;
-import com.victorprado.financeappbackendjava.domain.repository.CreditCardRepository;
-import com.victorprado.financeappbackendjava.domain.repository.RecurringExpenseRepository;
-import com.victorprado.financeappbackendjava.domain.repository.TransactionRepository;
-import com.victorprado.financeappbackendjava.domain.repository.UserRepository;
+import com.victorprado.financeappbackendjava.domain.repository.*;
 import com.victorprado.financeappbackendjava.service.context.SecurityContext;
 import com.victorprado.financeappbackendjava.service.dto.BackupDTO;
 import com.victorprado.financeappbackendjava.service.dto.ProfileCriteria;
 import com.victorprado.financeappbackendjava.service.dto.UserBalanceDTO;
 import com.victorprado.financeappbackendjava.service.dto.UserDTO;
 import com.victorprado.financeappbackendjava.service.mapper.CreditCardMapper;
+import com.victorprado.financeappbackendjava.service.mapper.MonthClosureMapper;
 import com.victorprado.financeappbackendjava.service.mapper.RecurringExpenseMapper;
 import com.victorprado.financeappbackendjava.service.mapper.TransactionMapper;
 import lombok.RequiredArgsConstructor;
@@ -40,11 +38,13 @@ public class UserService {
     private final CreditCardRepository creditCardRepository;
     private final TransactionRepository transactionRepository;
     private final RecurringExpenseRepository recurringExpenseRepository;
+    private final MonthClosureRepository monthClosureRepository;
     private final UserRepository repository;
 
     private final CreditCardMapper creditCardMapper;
     private final TransactionMapper transactionMapper;
     private final RecurringExpenseMapper recurringExpenseMapper;
+    private final MonthClosureMapper monthClosureMapper;
 
     @Cacheable(cacheNames = "get_user_profile_cache")
     public UserDTO getUser(ProfileCriteria criteria) {
@@ -74,10 +74,14 @@ public class UserService {
         var transactions = transactionRepository.findByUserIdAndInvoiceIsNullAndDateIsBetween(user.getId(),
                 from, to);
         var recurringExpenses = recurringExpenseRepository.findByUserId(user.getId());
+
+        var monthClosures = monthClosureRepository.findLastFive(user);
+
         log.info("Building user object with all fetched data [user: {}]", user.getEmail());
         userDTO.setCreditCards(creditCardMapper.toDTO(creditCards));
         userDTO.setTransactions(transactionMapper.toDTO(transactions));
         userDTO.setRecurringExpenses(recurringExpenseMapper.toDTO(recurringExpenses));
+        userDTO.setMonthClosures(monthClosureMapper.toDTO(monthClosures));
         return userDTO;
     }
 
