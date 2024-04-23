@@ -75,13 +75,13 @@ public class UserService {
                 from, to);
         var recurringExpenses = recurringExpenseRepository.findByUserId(user.getId());
 
-        var monthClosures = monthClosureRepository.findLastFive(user);
+//        var monthClosures = monthClosureRepository.findLastFive(user);
 
         log.info("Building user object with all fetched data [user: {}]", user.getEmail());
         userDTO.setCreditCards(creditCardMapper.toDTO(creditCards));
         userDTO.setTransactions(transactionMapper.toDTO(transactions));
         userDTO.setRecurringExpenses(recurringExpenseMapper.toDTO(recurringExpenses));
-        userDTO.setMonthClosures(monthClosureMapper.toDTO(monthClosures));
+//        userDTO.setMonthClosures(monthClosureMapper.toDTO(monthClosures));
         return userDTO;
     }
 
