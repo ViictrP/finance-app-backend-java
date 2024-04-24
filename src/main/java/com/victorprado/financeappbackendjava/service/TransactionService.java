@@ -71,25 +71,18 @@ public class TransactionService {
 
     private TransactionDTO createInvoiceTransaction(TransactionDTO dto, CreditCard creditCard, User user) {
         log.info("Creating installment transactions {}", dto.getDescription());
-        var yearsIncrement = 0;
         var installmentId = UUID.randomUUID().toString();
         var installments = new ArrayList<Transaction>();
 
         log.info("Calculating transaction {}'s amount for the installment number", dto.getDescription());
         var transactionAmount = dto.getAmount().divide(BigDecimal.valueOf(dto.getInstallmentAmount()), RoundingMode.FLOOR);
         dto.setAmount(transactionAmount);
+
         var monthIndex = dto.getDate().getMonthValue();
 
         for (var i = 0; i < dto.getInstallmentAmount(); i++) {
             var newTransaction = new Transaction();
-
-            if (monthIndex > 12) {
-                monthIndex = 1;
-                yearsIncrement++;
-            }
-
-            newTransaction.setDate(LocalDateTime.of(dto.getDate().getYear() + yearsIncrement, monthIndex, dto.getDate().getDayOfMonth(), dto.getDate().getHour(), dto.getDate().getMinute(), dto.getDate().getSecond()));
-
+            newTransaction.setDate(dto.getDate());
             newTransaction.setAmount(dto.getAmount());
             newTransaction.setCategory(dto.getCategory());
             newTransaction.setUser(user);
@@ -104,7 +97,7 @@ public class TransactionService {
                 newTransaction.setDescription(dto.getDescription());
             }
 
-            populateWithInvoice(newTransaction, creditCard);
+            populateWithInvoice(newTransaction, creditCard, monthIndex);
             installments.add(newTransaction);
             monthIndex++;
         }
@@ -112,23 +105,22 @@ public class TransactionService {
         return mapper.toDTO(installments.get(0));
     }
 
-    private void populateWithInvoice(Transaction newTransaction, CreditCard creditCard) {
+    private void populateWithInvoice(Transaction newTransaction, CreditCard creditCard, Integer monthIndex) {
         var year = newTransaction.getDate().getYear();
-        var month = newTransaction.getDate().getMonthValue();
         var day = newTransaction.getDate().getDayOfMonth();
 
 
         if (day > creditCard.getInvoiceClosingDay()) {
-            month++;
+            monthIndex++;
         }
 
-        if (month > 12) {
+        if (monthIndex > 12) {
             year++;
-            month = 0;
+            monthIndex = 1;
         }
 
-        var date = LocalDate.of(year, month, day);
-        var nextMonth = date.getMonth().name().substring(0, 3);
+        var newDate = LocalDate.of(year, monthIndex, day);
+        var nextMonth = newDate.getMonth().name().substring(0, 3);
 
         var invoice = invoiceRepository
                 .findByMonthAndYearAndCreditCardId(nextMonth, year, creditCard.getId())
