@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 11
+      author: Victor
+      changes:
+        - dropIndex:
+            tableName: invoice
+            indexName: invoice_creditcard_createdat_index
+
+        - createIndex:
+            tableName: invoice
+            indexName: invoice_creditcard_month_year_createdat_index
+            unique: true
+            columns:
+              - column:
+                  name: credit_card_id
+              - column:
+                  name: month
+              - column:
+                  name: year
+              - column:
+                  name: created_at
