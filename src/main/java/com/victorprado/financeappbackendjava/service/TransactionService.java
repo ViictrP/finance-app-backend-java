@@ -88,7 +88,7 @@ public class TransactionService {
                 yearsIncrement++;
             }
 
-            newTransaction.setDate(LocalDateTime.of(dto.getDate().getYear() + yearsIncrement, monthIndex, dto.getDate().getDayOfMonth(), 0, 0));
+            newTransaction.setDate(LocalDateTime.of(dto.getDate().getYear() + yearsIncrement, monthIndex, dto.getDate().getDayOfMonth(), dto.getDate().getHour(), dto.getDate().getMinute(), dto.getDate().getSecond()));
 
             newTransaction.setAmount(dto.getAmount());
             newTransaction.setCategory(dto.getCategory());
