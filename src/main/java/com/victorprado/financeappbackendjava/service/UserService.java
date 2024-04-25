@@ -86,6 +86,8 @@ public class UserService {
                 .lastname(SecurityContext.getUserLastName())
                 .email(SecurityContext.getUserEmail())
                 .salary(user.getSalary())
+                .taxValue(user.getTaxValue())
+                .exchangeTaxValue(user.getExchangeTaxValue())
                 .creditCards(creditCardMapper.toDTO(creditCards))
                 .transactions(transactionMapper.toDTO(transactions))
                 .monthClosures(monthClosureMapper.toDTO(monthClosures))
@@ -146,6 +148,8 @@ public class UserService {
                 .expenses(expenses)
                 .salary(user.getSalary())
                 .available(user.getSalary().subtract(expenses))
+                .taxValue(user.getTaxValue())
+                .exchangeTaxValue(user.getExchangeTaxValue())
                 .creditCardExpenses(creditCardsAmounts)
                 .creditCards(creditCardMapper.toDTO(creditCards))
                 .transactions(transactionMapper.toDTO(transactions))
@@ -180,6 +184,8 @@ public class UserService {
                 var salaryMinusCurrencyTax = grossSalary.subtract(grossSalary.multiply(currencyConversionTax));
 
                 user.setSalary(salaryMinusCurrencyTax.subtract(salaryMinusCurrencyTax.multiply(salaryTax)));
+                user.setTaxValue(salaryMinusCurrencyTax.multiply(salaryTax));
+                user.setExchangeTaxValue(grossSalary.multiply(currencyConversionTax));
             }
         }
     }
