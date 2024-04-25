@@ -18,11 +18,11 @@ public final class SecurityContext {
     }
 
     public static String getUserName() {
-        return getAuthentication().getClaim("given_name");
+        return getAuthentication().getClaim("name").toString().split(" ")[0];
     }
 
     public static String getUserLastName() {
-        return getAuthentication().getClaim("family_name");
+        return getAuthentication().getClaim("name").toString().split(" ")[1];
     }
 
     private static Jwt getAuthentication() {

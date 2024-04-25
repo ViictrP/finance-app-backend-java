@@ -30,3 +30,10 @@ spring:
     default-schema: ${SCHEMA}
     enabled: true
 
+  cloud:
+    openfeign:
+      client:
+        config:
+          CURRENCY:
+            url: https://economia.awesomeapi.com.br/json/last
+
