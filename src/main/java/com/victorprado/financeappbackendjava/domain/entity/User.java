@@ -60,6 +60,12 @@ public class User extends BaseEntity<Long> {
     @Column(name = "property_value", length = 500)
     private Map<String, @NotBlank String> properties = new HashMap<>();
 
+    @Transient
+    private BigDecimal taxValue;
+
+    @Transient
+    private BigDecimal exchangeTaxValue;
+
     @Override
     public boolean validate() {
         return false;

@@ -15,6 +15,8 @@ public class UserBalanceDTO {
     private BigDecimal salary;
     private BigDecimal expenses;
     private BigDecimal available;
+    private BigDecimal taxValue;
+    private BigDecimal exchangeTaxValue;
     private Map<Long, BigDecimal> creditCardExpenses;
     private List<TransactionDTO> transactions;
     private List<RecurringExpenseDTO> recurringExpenses;

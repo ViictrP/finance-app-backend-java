@@ -21,6 +21,8 @@ public class UserDTO {
   private String lastname;
   private String email;
   private BigDecimal salary;
+  private BigDecimal taxValue;
+  private BigDecimal exchangeTaxValue;
   @Valid
   private List<CreditCardDTO> creditCards = new ArrayList<>();
   @Valid
