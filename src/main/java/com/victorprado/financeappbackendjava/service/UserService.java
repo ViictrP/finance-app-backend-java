@@ -180,15 +180,23 @@ public class UserService {
             if (usdToBrl != null) {
                 var exchangeValue = new BigDecimal(usdToBrl.get("ask"));
                 var grossSalary = exchangeValue.multiply(user.getSalary());
-                var currencyConversionTax = new BigDecimal(user.getProperty(CURRENCY_CONVERSION_TAX));
-
-                var salaryTax = new BigDecimal(user.getProperty(SALARY_TAX));
-                var salaryMinusCurrencyTax = grossSalary.subtract(grossSalary.multiply(currencyConversionTax));
-
                 user.setNonConvertedSalary(user.getSalary());
-                user.setSalary(salaryMinusCurrencyTax.subtract(salaryMinusCurrencyTax.multiply(salaryTax)));
-                user.setTaxValue(salaryMinusCurrencyTax.multiply(salaryTax));
-                user.setExchangeTaxValue(grossSalary.multiply(currencyConversionTax));
+
+                if (user.getProperty(CURRENCY_CONVERSION_TAX) != null) {
+                    var currencyConversionTax = new BigDecimal(user.getProperty(CURRENCY_CONVERSION_TAX));
+                    var conversionValue = grossSalary.multiply(currencyConversionTax);
+                    grossSalary = grossSalary.subtract(conversionValue);
+                    user.setExchangeTaxValue(conversionValue);
+                }
+
+                if (user.getProperty(SALARY_TAX) != null) {
+                    var salaryTax = new BigDecimal(user.getProperty(SALARY_TAX));
+                    var taxValue = grossSalary.multiply(salaryTax);
+                    grossSalary = grossSalary.subtract(grossSalary.multiply(salaryTax));
+                    user.setTaxValue(taxValue);
+                }
+
+                user.setSalary(grossSalary);
             }
         }
     }
