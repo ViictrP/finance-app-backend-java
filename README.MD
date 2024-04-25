@@ -1,5 +1,5 @@
 # FINANCE APP BACKEND
-API for Finance App
+API for Finance App [![Build - finance-app-backend-java](https://github.com/ViictrP/finance-app-backend-java/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/ViictrP/finance-app-backend-java/actions/workflows/build.yml)
 
 ## Building the application
     docker build --tag finance-app-server -f ./Dockerfile .
