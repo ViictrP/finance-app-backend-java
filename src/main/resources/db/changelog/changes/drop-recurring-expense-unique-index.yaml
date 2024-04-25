@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 6
+      author: Victor
+      changes:
+        - dropIndex:
+            tableName: recurring_expense
+            indexName: recurringexpense_user_category_createdat_index

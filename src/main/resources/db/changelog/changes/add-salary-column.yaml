@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: Victor
+      changes:
+        - addColumn:
+            tableName: finance_app_user
+            columns:
+              - column:
+                  name: salary
+                  type: Decimal
+                  defaultValue: "0.00"
+                  constraints:
+                    nullable: false

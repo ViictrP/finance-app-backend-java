@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: Victor
+      changes:
+        - dropUniqueConstraint:
+            tableName: credit_card
+            constraintName: unique_number_user_id_credit_card
+            uniqueColumns: number, user_id
+
+        - addUniqueConstraint:
+              catalogName: cat
+              columnNames: number, user_id, deleted
+              constraintName: unique_number_user_id_deleted_credit_card
+              initiallyDeferred: true
+              tableName: credit_card
+              validate: true

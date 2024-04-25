@@ -1,5 +1,6 @@
 package com.victorprado.financeappbackendjava.domain.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -9,14 +10,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @Setter
+@Where(clause = "deleted = false")
 public class Transaction extends BaseEntity<Long> {
-
-  @NotBlank(message = "The user ID is required")
-  private String userId;
 
   @NotBlank(message = "The description is required")
   private String description;
@@ -30,16 +30,25 @@ public class Transaction extends BaseEntity<Long> {
   private Boolean isInstallment = false;
   private Integer installmentNumber;
   private String installmentId;
+  private Integer installmentAmount;
 
   @NotNull(message = "The date is required")
   private LocalDateTime date;
 
-  @ManyToOne()
+  @ManyToOne(cascade = CascadeType.PERSIST)
   @JoinColumn(name = "invoice_id")
   private Invoice invoice;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 
   @Override
   public boolean validate() {
     return true;
+  }
+
+  public void delete() {
+    this.setDeleted(true);
   }
 }

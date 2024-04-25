@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "client.currency-api",
+      "type": "java.lang.String",
+      "description": "Description for client.currency-api."
+    }
+  ]
+}

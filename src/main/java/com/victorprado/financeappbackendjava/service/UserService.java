@@ -1,31 +1,37 @@
 package com.victorprado.financeappbackendjava.service;
 
-import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
-import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
-
+import com.victorprado.financeappbackendjava.client.CurrencyAPI;
+import com.victorprado.financeappbackendjava.domain.entity.RecurringExpense;
+import com.victorprado.financeappbackendjava.domain.entity.Transaction;
+import com.victorprado.financeappbackendjava.domain.entity.User;
 import com.victorprado.financeappbackendjava.domain.enums.MonthEnum;
-import com.victorprado.financeappbackendjava.domain.exception.InvalidSalaryException;
-import com.victorprado.financeappbackendjava.domain.exception.LoggedUserNotFoundInBackup;
-import com.victorprado.financeappbackendjava.domain.repository.CreditCardRepository;
-import com.victorprado.financeappbackendjava.domain.repository.RecurringExpenseRepository;
-import com.victorprado.financeappbackendjava.domain.repository.SalaryRepository;
-import com.victorprado.financeappbackendjava.domain.repository.TransactionRepository;
-import com.victorprado.financeappbackendjava.service.dto.BackupDTO;
+import com.victorprado.financeappbackendjava.domain.exception.CoreException;
+import com.victorprado.financeappbackendjava.domain.repository.*;
+import com.victorprado.financeappbackendjava.service.context.SecurityContext;
 import com.victorprado.financeappbackendjava.service.dto.ProfileCriteria;
-import com.victorprado.financeappbackendjava.service.dto.SalaryDTO;
+import com.victorprado.financeappbackendjava.service.dto.UserBalanceDTO;
 import com.victorprado.financeappbackendjava.service.dto.UserDTO;
 import com.victorprado.financeappbackendjava.service.mapper.CreditCardMapper;
+import com.victorprado.financeappbackendjava.service.mapper.MonthClosureMapper;
 import com.victorprado.financeappbackendjava.service.mapper.RecurringExpenseMapper;
-import com.victorprado.financeappbackendjava.service.mapper.SalaryMapper;
 import com.victorprado.financeappbackendjava.service.mapper.TransactionMapper;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.victorprado.financeappbackendjava.client.enums.Context.USDBRL;
+import static com.victorprado.financeappbackendjava.domain.enums.UserProperty.*;
+import static java.lang.Boolean.parseBoolean;
+import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
+import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 
 @Slf4j
 @Service
@@ -33,102 +39,148 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserService {
 
-  private final CreditCardRepository creditCardRepository;
-  private final TransactionRepository transactionRepository;
-  private final RecurringExpenseRepository recurringExpenseRepository;
-  private final CreditCardMapper creditCardMapper;
-  private final TransactionMapper transactionMapper;
-  private final RecurringExpenseMapper recurringExpenseMapper;
-  private final SalaryRepository salaryRepository;
-  private final SalaryMapper salaryMapper;
+    private final CurrencyAPI currencyAPI;
 
-  @Cacheable(cacheNames = "get_user_profile_cache")
-  public UserDTO getUser(ProfileCriteria criteria, Authentication authentication) {
-    var jwt = (Jwt) authentication.getPrincipal();
-    var userId = (String) jwt.getClaim("sub");
-    var email = jwt.getClaim("email");
-    log.info("Getting credit cards and transactions of the user [user: {}]", email);
-    var today = LocalDate.now();
-    var month = criteria.getMonth() != null ? MonthEnum.getMonth(criteria.getMonth()) : MonthEnum.getMonth(today.getMonthValue());
-    var year = criteria.getYear() != null ? criteria.getYear() : today.getYear();
-    var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(userId, month.name(), year);
+    private final CreditCardRepository creditCardRepository;
+    private final TransactionRepository transactionRepository;
+    private final RecurringExpenseRepository recurringExpenseRepository;
+    private final MonthClosureRepository monthClosureRepository;
+    private final UserRepository repository;
 
-    var from = today
-      .withYear(year)
-      .withMonth(month.getIndex())
-      .with(firstDayOfMonth()).atStartOfDay();
+    private final CreditCardMapper creditCardMapper;
+    private final TransactionMapper transactionMapper;
+    private final RecurringExpenseMapper recurringExpenseMapper;
+    private final MonthClosureMapper monthClosureMapper;
 
-    var to = today
-      .withMonth(month.getIndex())
-      .withYear(year)
-      .with(lastDayOfMonth())
-      .atTime(23, 59, 59);
+    @Cacheable(cacheNames = "get_user_profile_cache")
+    public UserDTO getUser(ProfileCriteria criteria) {
+        var user = loadUser();
 
-    var transactions = transactionRepository.findByUserIdAndInvoiceIsNullAndDateIsBetween(userId,
-      from, to);
-    var recurringExpenses = recurringExpenseRepository.findByUserId(userId);
-    var salary = salaryRepository.findByUserId(userId).orElse(null);
-    log.info("Building user object with all fetched data [user: {}]", email);
-    return UserDTO.builder()
-      .id(userId)
-      .name(jwt.getClaim("given_name"))
-      .lastname(jwt.getClaim("family_name"))
-      .email((String) email)
-      .salary(salaryMapper.toDTO(salary))
-      .creditCards(creditCardMapper.toDTO(creditCards))
-      .transactions(transactionMapper.toDTO(transactions))
-      .recurringExpenses(recurringExpenseMapper.toDTO(recurringExpenses))
-      .build();
-  }
+        log.info("Getting credit cards and transactions of the user [user: {}]", user.getEmail());
+        var today = LocalDate.now();
+        var month = criteria.getMonth() != null ? MonthEnum.getMonth(criteria.getMonth()) : MonthEnum.getMonth(today.getMonthValue());
+        var year = criteria.getYear();
+        var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(user.getId(), month.name(), year);
 
-  public SalaryDTO createSalary(SalaryDTO salary) {
-    var entity = salaryMapper.toEntity(salary);
-    if (!entity.validate()) {
-      throw new InvalidSalaryException();
+        var from = today
+                .withYear(year)
+                .withMonth(month.getIndex())
+                .with(firstDayOfMonth()).atStartOfDay();
+
+        var to = today
+                .withMonth(month.getIndex())
+                .withYear(year)
+                .with(lastDayOfMonth())
+                .atTime(23, 59, 59);
+
+        var transactions = transactionRepository.findByUserIdAndInvoiceIsNullAndDateIsBetween(user.getId(),
+                from, to);
+        var recurringExpenses = recurringExpenseRepository.findByUserId(user.getId());
+
+        var monthClosures = monthClosureRepository.findLastFiveByYear(user, today.getYear());
+
+        log.info("Building user object with all fetched data [user: {}]", user.getEmail());
+        return UserDTO.builder()
+                .id(SecurityContext.getUserId())
+                .name(SecurityContext.getUserName())
+                .lastname(SecurityContext.getUserLastName())
+                .email(SecurityContext.getUserEmail())
+                .salary(user.getSalary())
+                .creditCards(creditCardMapper.toDTO(creditCards))
+                .transactions(transactionMapper.toDTO(transactions))
+                .monthClosures(monthClosureMapper.toDTO(monthClosures))
+                .recurringExpenses(recurringExpenseMapper.toDTO(recurringExpenses))
+                .build();
     }
-    var result = salaryRepository.save(entity);
-    return salaryMapper.toDTO(result);
-  }
 
-  @Transactional
-  public void importBackup(BackupDTO backup, Authentication authentication) {
-    log.info("Verifying if logged user is present in the backup. User ID: {}",
-      authentication.getName());
-    var userId = authentication.getName();
-    var email = ((Jwt) authentication.getPrincipal()).getClaim("email");
-    var user = backup.getUsers().stream().filter(u -> email.equals(u.getEmail()))
-      .findFirst().orElseThrow(LoggedUserNotFoundInBackup::new);
+    @Cacheable(cacheNames = "get_user_balance_cache")
+    public UserBalanceDTO getUserBalance(ProfileCriteria criteria) {
+        var user = loadUser();
 
-    if (user.getCreditCards() != null) {
-      log.info("Converting the credit cards. User ID: {}", authentication.getName());
-      var creditCards = creditCardMapper.toEntity(user.getCreditCards());
-      creditCards.forEach(creditCard -> {
-        creditCard.setUserId(userId);
-        creditCard.getInvoices().forEach(invoice -> {
-          invoice.setCreditCard(creditCard);
-          invoice.getTransactions().forEach(transaction -> transaction.setInvoice(invoice));
+        log.info("Getting logged user's credit cards and transactions [user: {}]", user.getEmail());
+        var today = LocalDate.now();
+        var month = criteria.getMonth() != null ? MonthEnum.getMonth(criteria.getMonth()) : MonthEnum.getMonth(today.getMonthValue());
+        var year = criteria.getYear();
+        var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(user.getId(), month.name(), year);
+
+        final var creditCardsTotal = new BigDecimal[]{BigDecimal.ZERO};
+        var creditCardsAmounts = new HashMap<Long, BigDecimal>();
+        creditCards.forEach(creditCard -> {
+            var amount = creditCard.getInvoices().stream()
+                    .map(invoice -> invoice.getTransactions().stream()
+                            .map(Transaction::getAmount)
+                            .reduce(BigDecimal::add)
+                            .orElse(BigDecimal.ZERO))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            creditCardsAmounts.put(creditCard.getId(), amount);
+            creditCardsTotal[0] = creditCardsTotal[0].add(amount);
         });
-      });
 
-      creditCardRepository.saveAll(creditCards);
+        var from = today
+                .withYear(year)
+                .withMonth(month.getIndex())
+                .with(firstDayOfMonth()).atStartOfDay();
+
+        var to = today
+                .withMonth(month.getIndex())
+                .withYear(year)
+                .with(lastDayOfMonth())
+                .atTime(23, 59, 59);
+
+        var transactions = transactionRepository.findByUserIdAndInvoiceIsNullAndDateIsBetween(user.getId(), from, to);
+        var transactionsTotal = transactions.stream()
+                .map(Transaction::getAmount)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+
+        var recurringExpenses = recurringExpenseRepository.findByUserId(user.getId());
+        var recurringExpensesTotal = recurringExpenses.stream()
+                .map(RecurringExpense::getAmount)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO);
+
+        var expenses = creditCardsTotal[0].add(transactionsTotal).add(recurringExpensesTotal);
+
+        return UserBalanceDTO.builder()
+                .expenses(expenses)
+                .salary(user.getSalary())
+                .available(user.getSalary().subtract(expenses))
+                .creditCardExpenses(creditCardsAmounts)
+                .creditCards(creditCardMapper.toDTO(creditCards))
+                .transactions(transactionMapper.toDTO(transactions))
+                .recurringExpenses(recurringExpenseMapper.toDTO(recurringExpenses))
+                .build();
     }
 
-    if (user.getRecurringExpenses() != null) {
-      log.info("Converting the recurring expenses. User ID: {}", authentication.getName());
-      var recurringExpenses = recurringExpenseMapper.toEntity(user.getRecurringExpenses());
-      recurringExpenses.forEach(recurringExpense -> recurringExpense.setUserId(userId));
-
-      recurringExpenseRepository.saveAll(recurringExpenses);
+    private User loadUser() {
+        log.info("Loading user data [user: {}]", SecurityContext.getUserEmail());
+        return repository.findByEmail(SecurityContext.getUserEmail())
+                .map(u -> {
+                    executeCurrencyExchange(u);
+                    return u;
+                })
+                .orElseThrow(() -> new CoreException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
-    if (user.getTransactions() != null) {
-      log.info("Converting the transactions. User ID: {}", authentication.getName());
-      var transactions = transactionMapper.toEntity(user.getTransactions());
-      transactions.forEach(transaction -> transaction.setUserId(userId));
+    private void executeCurrencyExchange(User user) {
+        var mustDoConversion = user.getProperty(CURRENCY_CONVERSION);
 
-      transactionRepository.saveAll(transactions);
+        if (parseBoolean(mustDoConversion)) {
+            var exchangeType = user.getProperty(CURRENCY_CONVERSION_TYPE);
+            var exchangeRate = currencyAPI.getDollarExchangeRates(exchangeType);
+            var usdToBrl = (Map<String, String>) exchangeRate.getBody().get(USDBRL.getType());
+
+            if (usdToBrl != null) {
+                var exchangeValue = new BigDecimal(usdToBrl.get("ask"));
+                var grossSalary = exchangeValue.multiply(user.getSalary());
+                var currencyConversionTax = new BigDecimal(user.getProperty(CURRENCY_CONVERSION_TAX));
+
+                var salaryTax = new BigDecimal(user.getProperty(SALARY_TAX));
+                var salaryMinusCurrencyTax = grossSalary.subtract(grossSalary.multiply(currencyConversionTax));
+
+                user.setSalary(salaryMinusCurrencyTax.subtract(salaryMinusCurrencyTax.multiply(salaryTax)));
+            }
+        }
     }
-
-
-  }
 }

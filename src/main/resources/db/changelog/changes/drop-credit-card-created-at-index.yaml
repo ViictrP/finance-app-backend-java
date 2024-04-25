@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: Victor
+      changes:
+        - dropIndex:
+            tableName: credit_card
+            indexName: creditcard_user_createdat_index

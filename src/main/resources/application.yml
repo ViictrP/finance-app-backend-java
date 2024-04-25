@@ -1,27 +1,43 @@
 server:
   port: ${PORT}
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css
+
+logging:
+  level:
+    root: INFO
 
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: validate
   datasource:
-    type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://${DATABASE_URL}
+    url: ${DATABASE_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 30
-      minimum-idle: 10
-      schema: finance_app
+      schema: ${SCHEMA}
+      connectionTimeout: 20000
+      maximum-pool-size: 5
+
+  jpa:
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://${ISSUER_URI}/realms/${ISSUER_REALM}/protocol/openid-connect/certs
+          issuer-uri: ${ISSUER_URI}
+          jwk-set-uri: ${JWK_SET_URI}
 
   liquibase:
-    default-schema: finance_app
-    contexts: local
+    default-schema: ${SCHEMA}
     enabled: true
+
+  cloud:
+    openfeign:
+      client:
+        config:
+          CURRENCY:
+            url: https://economia.awesomeapi.com.br/json/last

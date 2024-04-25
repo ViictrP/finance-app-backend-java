@@ -1,0 +1,38 @@
+version: '3'
+services:
+  postgres-compose:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: "515253@@$3"
+    ports:
+      - "15432:5432"
+    networks:
+      - postgres-compose-network
+  keycloak-compose:
+    image: quay.io/keycloak/keycloak:latest
+    restart: always
+    command: start --db-driver=postgres
+    environment:
+      - KEYCLOAK_ADMIN=viictrp
+      - KEYCLOAK_ADMIN_PASSWORD=515253@@#$
+      - KC_DB=postgres
+      - KC_DB_USERNAME=postgres
+      - KC_DB_PASSWORD=515253@@$3
+      - KC_DB_URL_HOST=postgres-compose
+      - KC_DB_URL_PORT=5432
+      - KC_DB_SCHEMA=sso_server
+      - KC_HOSTNAME_URL=https://keycloak.financeapp.dev
+      - KC_HOSTNAME_STRICT_HTTPS="true"
+      - KC_HOSTNAME_STRICT_BACKCHANNEL="true"
+      - KC_PROXY=edge
+      - KC_FRONTEND_URL="https://financeapp.dev/auth"
+    ports:
+      - "8443:8443"
+      - "8081:8080"
+    depends_on:
+      - postgres-compose
+    networks:
+      - postgres-compose-network
+networks:
+  postgres-compose-network:
+    driver: bridge

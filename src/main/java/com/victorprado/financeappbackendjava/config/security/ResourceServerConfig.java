@@ -14,14 +14,15 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class ResourceServerConfig {
 
-  private final KeycloakJwtAuthenticationConverter converter;
 
   @Bean
   public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
     http
       .authorizeHttpRequests(authz -> authz.anyRequest().authenticated())
+      .csrf().disable()
+      .cors().and()
       .oauth2ResourceServer()
-      .jwt().jwtAuthenticationConverter(converter);
+      .jwt();
     return http.build();
   }
 }

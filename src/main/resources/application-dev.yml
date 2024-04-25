@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: ${PORT}
 
 logging:
   level:
@@ -7,20 +7,33 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:15432/finance-app-database?schema=finance_app
-    username: postgres
-    password: postgres
+    url: ${DATABASE_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikari:
+      schema: ${SCHEMA}
+      connectionTimeout: 20000
+      maximum-pool-size: 5
 
   jpa:
     show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8080/realms/finance-app/protocol/openid-connect/certs
+          issuer-uri: ${ISSUER_URI}
+          jwk-set-uri: ${JWK_SET_URI}
 
   liquibase:
-    default-schema: finance_app
+    default-schema: ${SCHEMA}
     enabled: true
+
+  cloud:
+    openfeign:
+      client:
+        config:
+          CURRENCY:
+            url: https://economia.awesomeapi.com.br/json/last
 

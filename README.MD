@@ -10,7 +10,7 @@ This will run all the dependencies for this application to start.
 
 Now you can run the docker image you have built
 
-    docker run -e PORT=8081 -e DATABASE_URL=your.ip.address -e DB_USER=postgres -e DB_PASSWORD=postgres -e ISSUER_URI=localhost:8080 -e ISSUER_REALM=finance-app finance-app-server
+    docker run -d -e DATABASE_URL=DATABASE_URL -e DB_USER=DB_USER -e DB_PASSWORD=DB_PASSWORD -e ISSUER_URI=ISSUER_URI -e JWK_SET_URI=JWK_SET_URI -e SCHEMA=SCHEMA -e PORT=PORT -p PORT:PORT tag:version
 
 To verify if the API is UP go to `http://localhost:8080/actuator/health`
 

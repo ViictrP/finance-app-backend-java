@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: 2
+      id: 8
       author: Victor
       changes:
         - createTable:
-            tableName: salary
+            tableName: month_closure
             columns:
               - column:
                   name: id
@@ -14,30 +14,52 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: value
-                  type: decimal
+                  name: user_id
+                  type: bigint
                   constraints:
                     nullable: false
+                    foreignKeyName: fk_user_id_month_closure
+                    referencedColumnNames: id
+                    referencedTableName: finance_app_user
               - column:
                   name: month
-                  type: varchar(255)
+                  type: varchar(3)
                   constraints:
                     nullable: false
               - column:
                   name: year
-                  type: int
+                  type: Integer
                   constraints:
                     nullable: false
               - column:
-                  name: user_id
-                  type: varchar(255)
+                  name: total
+                  type: Decimal
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expenses
+                  type: Decimal
+                  constraints:
+                    nullable: false
+              - column:
+                  name: available
+                  type: Decimal
+                  constraints:
+                    nullable: false
+              - column:
+                  name: index
+                  type: Integer
                   constraints:
                     nullable: false
               - column:
                   name: deleted
                   type: boolean
+                  defaultValue: "false"
                   constraints:
                     nullable: false
+              - column:
+                  name: delete_date
+                  type: timestamp
               - column:
                   name: created_at
                   type: timestamp
@@ -48,12 +70,6 @@ databaseChangeLog:
                   type: timestamp
                   constraints:
                     nullable: false
-
-        - addUniqueConstraint:
-            catalogName: cat
-            columnNames: month, year, user_id
-            constraintName: unique_month_year_invoice_user
-            initiallyDeferred: true
-            schemaName: finance_app
-            tableName: salary
-            validate: true
+              - column:
+                  name: external_id
+                  type: varchar(255)

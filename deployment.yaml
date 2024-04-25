@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finance-app-backend-java
+spec:
+  selector:
+    matchLabels:
+      app: finance-app-backend-java
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: finance-app-backend-java
+    spec:
+      containers:
+        - name: finance-app-backend-java
+          image: finance-app-backend-java:1.0.0
+          ports:
+            - containerPort: 8081
+          env:
+            - name: DATABASE_URL
+              value: 192.168.15.174:15432/finance-app-database?schema=finance_app
+            - name: DB_USER
+              value: postgres
+            - name: DB_PASSWORD
+              value: postgres
+            - name: ISSUER_URI
+              value: 192.168.15.174:8080
+            - name: ISSUER_REALM
+              value: finance-app
+            - name: PORT
+              value: "8081"

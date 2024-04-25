@@ -10,8 +10,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class TransactionDTO extends BaseDTO {
-  @NotBlank(message = "The user ID is required")
-  private String userId;
+  private Long userId;
 
   @NotBlank(message = "The description is required")
   private String description;
@@ -23,8 +22,11 @@ public class TransactionDTO extends BaseDTO {
   private BigDecimal amount;
 
   private Boolean isInstallment = false;
-  private Integer installmentNumber;
+  private Integer installmentAmount;
   private String installmentId;
+  private Integer installmentNumber;
+
+  private Long creditCardId;
 
   @NotNull(message = "The date is required")
   private LocalDateTime date;

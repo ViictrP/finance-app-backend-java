@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 5
+      author: Victor
+      changes:
+        - dropIndex:
+            tableName: transaction
+            indexName: transaction_user_invoice_date_category_createdat_index

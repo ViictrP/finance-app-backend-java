@@ -14,7 +14,7 @@ import org.hibernate.annotations.Where;
 
 @Getter
 @Setter
-@Where(clause = "delete = false")
+@Where(clause = "deleted = false")
 @MappedSuperclass
 public abstract class BaseEntity<T extends Serializable> {
   @Id
@@ -22,7 +22,12 @@ public abstract class BaseEntity<T extends Serializable> {
   private T id;
   private LocalDateTime createdAt;
   private LocalDateTime modificatedAt;
+  private LocalDateTime deleteDate;
   private boolean deleted = false;
+
+  public boolean isNew() {
+    return this.id == null;
+  }
 
   @PrePersist
   public void prePersis() {
@@ -33,6 +38,9 @@ public abstract class BaseEntity<T extends Serializable> {
   @PreUpdate
   public void preUpdate() {
     this.modificatedAt = LocalDateTime.now();
+    if (this.deleted) {
+      this.deleteDate = LocalDateTime.now();
+    }
   }
 
   public abstract boolean validate();
