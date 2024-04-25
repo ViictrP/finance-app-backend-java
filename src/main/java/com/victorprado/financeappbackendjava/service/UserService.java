@@ -59,7 +59,7 @@ public class UserService {
         log.info("Getting credit cards and transactions of the user [user: {}]", user.getEmail());
         var today = LocalDate.now();
         var month = criteria.getMonth() != null ? MonthEnum.getMonth(criteria.getMonth()) : MonthEnum.getMonth(today.getMonthValue());
-        var year = criteria.getYear();
+        var year = criteria.getYear() != null ? criteria.getYear() : today.getYear();
         var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(user.getId(), month.name(), year);
 
         var from = today
@@ -100,7 +100,7 @@ public class UserService {
         log.info("Getting logged user's credit cards and transactions [user: {}]", user.getEmail());
         var today = LocalDate.now();
         var month = criteria.getMonth() != null ? MonthEnum.getMonth(criteria.getMonth()) : MonthEnum.getMonth(today.getMonthValue());
-        var year = criteria.getYear();
+        var year = criteria.getYear() != null ? criteria.getYear() : today.getYear();
         var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(user.getId(), month.name(), year);
 
         final var creditCardsTotal = new BigDecimal[]{BigDecimal.ZERO};
