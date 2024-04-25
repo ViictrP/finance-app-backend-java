@@ -1,6 +1,8 @@
 package com.victorprado.financeappbackendjava.service.dto;
 
 import jakarta.validation.Valid;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -18,7 +20,7 @@ public class UserDTO {
   private String name;
   private String lastname;
   private String email;
-  private SalaryDTO salary;
+  private BigDecimal salary;
   @Valid
   private List<CreditCardDTO> creditCards = new ArrayList<>();
   @Valid

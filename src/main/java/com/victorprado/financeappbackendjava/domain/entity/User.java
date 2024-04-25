@@ -1,5 +1,6 @@
 package com.victorprado.financeappbackendjava.domain.entity;
 
+import com.victorprado.financeappbackendjava.domain.enums.UserProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -73,12 +74,12 @@ public class User extends BaseEntity<Long> {
         this.creditCards.add(creditCard);
     }
 
-    public void addTransaction(Transaction transaction) {
-        if (this.transactions == null) {
-            this.transactions = new ArrayList<>();
+    public String getProperty(UserProperty userProperty) {
+        if (this.properties.containsKey(userProperty.getName())) {
+            return this.properties.get(userProperty.getName());
         }
 
-        transaction.setUser(this);
-        this.transactions.add(transaction);
+        return null;
     }
+
 }
