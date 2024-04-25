@@ -4,6 +4,9 @@
 name: Build - finance-app-backend-java
 
 on:
+  pull_request:
+    branches:
+      - develop
   push:
     branches:
       - main
