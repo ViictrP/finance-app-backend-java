@@ -23,6 +23,7 @@ public class UserDTO {
   private BigDecimal salary;
   private BigDecimal taxValue;
   private BigDecimal exchangeTaxValue;
+  private BigDecimal nonConvertedSalary;
   @Valid
   private List<CreditCardDTO> creditCards = new ArrayList<>();
   @Valid

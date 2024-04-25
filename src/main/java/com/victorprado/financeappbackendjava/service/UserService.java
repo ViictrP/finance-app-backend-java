@@ -88,6 +88,7 @@ public class UserService {
                 .salary(user.getSalary())
                 .taxValue(user.getTaxValue())
                 .exchangeTaxValue(user.getExchangeTaxValue())
+                .nonConvertedSalary(user.getNonConvertedSalary())
                 .creditCards(creditCardMapper.toDTO(creditCards))
                 .transactions(transactionMapper.toDTO(transactions))
                 .monthClosures(monthClosureMapper.toDTO(monthClosures))
@@ -150,6 +151,7 @@ public class UserService {
                 .available(user.getSalary().subtract(expenses))
                 .taxValue(user.getTaxValue())
                 .exchangeTaxValue(user.getExchangeTaxValue())
+                .nonConvertedSalary(user.getNonConvertedSalary())
                 .creditCardExpenses(creditCardsAmounts)
                 .creditCards(creditCardMapper.toDTO(creditCards))
                 .transactions(transactionMapper.toDTO(transactions))
@@ -183,6 +185,7 @@ public class UserService {
                 var salaryTax = new BigDecimal(user.getProperty(SALARY_TAX));
                 var salaryMinusCurrencyTax = grossSalary.subtract(grossSalary.multiply(currencyConversionTax));
 
+                user.setNonConvertedSalary(user.getSalary());
                 user.setSalary(salaryMinusCurrencyTax.subtract(salaryMinusCurrencyTax.multiply(salaryTax)));
                 user.setTaxValue(salaryMinusCurrencyTax.multiply(salaryTax));
                 user.setExchangeTaxValue(grossSalary.multiply(currencyConversionTax));

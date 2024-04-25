@@ -66,6 +66,9 @@ public class User extends BaseEntity<Long> {
     @Transient
     private BigDecimal exchangeTaxValue;
 
+    @Transient
+    private BigDecimal nonConvertedSalary;
+
     @Override
     public boolean validate() {
         return false;
