@@ -6,7 +6,8 @@ name: Build - finance-app-backend-java
 on:
   push:
     branches:
-      [main, develop]
+      - main
+      - develop
 jobs:
   build:
     runs-on: ubuntu-latest
