@@ -1,16 +1,12 @@
 package com.victorprado.financeappbackendjava.entrypoint.controller;
 
 import com.victorprado.financeappbackendjava.service.UserService;
-import com.victorprado.financeappbackendjava.service.dto.ProfileCriteria;
-import com.victorprado.financeappbackendjava.service.dto.UserBalanceDTO;
-import com.victorprado.financeappbackendjava.service.dto.UserDTO;
+import com.victorprado.financeappbackendjava.service.dto.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -33,5 +29,19 @@ public class UserController {
     log.info("Balance request received");
     var balance = service.getUserBalance(criteria);
     return ResponseEntity.ok().body(balance);
+  }
+
+  @PostMapping
+  public ResponseEntity<UserDTO> createProfile(@Valid @RequestBody ProfileDTO profile) {
+    log.info("Profile creation request received {}", profile.getName());
+    var newProfile = service.create(profile);
+    return ResponseEntity.ok().body(newProfile);
+  }
+
+  @PutMapping
+  public ResponseEntity<UserDTO> createProfile(@Valid @RequestBody UpdateProfileDTO profile) {
+    log.info("Profile creation request received");
+    var updatedProfile = service.update(profile);
+    return ResponseEntity.ok().body(updatedProfile);
   }
 }
