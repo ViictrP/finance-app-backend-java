@@ -8,9 +8,7 @@ import com.victorprado.financeappbackendjava.domain.enums.MonthEnum;
 import com.victorprado.financeappbackendjava.domain.exception.CoreException;
 import com.victorprado.financeappbackendjava.domain.repository.*;
 import com.victorprado.financeappbackendjava.service.context.SecurityContext;
-import com.victorprado.financeappbackendjava.service.dto.ProfileCriteria;
-import com.victorprado.financeappbackendjava.service.dto.UserBalanceDTO;
-import com.victorprado.financeappbackendjava.service.dto.UserDTO;
+import com.victorprado.financeappbackendjava.service.dto.*;
 import com.victorprado.financeappbackendjava.service.mapper.CreditCardMapper;
 import com.victorprado.financeappbackendjava.service.mapper.MonthClosureMapper;
 import com.victorprado.financeappbackendjava.service.mapper.RecurringExpenseMapper;
@@ -22,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.constant.ConstantDesc;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -93,6 +92,7 @@ public class UserService {
                 .transactions(transactionMapper.toDTO(transactions))
                 .monthClosures(monthClosureMapper.toDTO(monthClosures))
                 .recurringExpenses(recurringExpenseMapper.toDTO(recurringExpenses))
+                .properties(user.getProperties())
                 .build();
     }
 
@@ -199,5 +199,53 @@ public class UserService {
                 user.setSalary(grossSalary);
             }
         }
+    }
+
+    @Transactional
+    public UserDTO create(ProfileDTO profile) {
+        var user = User.builder()
+                .name(profile.getName())
+                .lastname(profile.getLastname())
+                .email(profile.getEmail())
+                .salary(profile.getSalary())
+                .active(true)
+                .properties(profile.getProperties())
+                .build();
+
+        log.info("Creating profile [user: {}]", user.getEmail());
+        repository.save(user);
+        return UserDTO.builder()
+                .id(user.getId().toString())
+                .name(user.getName())
+                .lastname(user.getLastname())
+                .email(SecurityContext.getUserEmail())
+                .salary(user.getSalary())
+                .taxValue(user.getTaxValue())
+                .exchangeTaxValue(user.getExchangeTaxValue())
+                .nonConvertedSalary(user.getNonConvertedSalary())
+                .build();
+    }
+
+    @Transactional
+    public UserDTO update(UpdateProfileDTO profile) {
+        log.info("Loading user data [user: {}]", SecurityContext.getUserEmail());
+        var user = repository.findByEmail(SecurityContext.getUserEmail())
+                .orElseThrow(() -> new CoreException(HttpStatus.NOT_FOUND, "User not found"));
+
+        user.setProperties(profile.getProperties());
+
+        log.info("Updating the profile [user: {}]", user.getEmail());
+        repository.save(user);
+        return UserDTO.builder()
+                .id(user.getId().toString())
+                .name(user.getName())
+                .lastname(user.getLastname())
+                .email(SecurityContext.getUserEmail())
+                .salary(user.getSalary())
+                .taxValue(user.getTaxValue())
+                .exchangeTaxValue(user.getExchangeTaxValue())
+                .nonConvertedSalary(user.getNonConvertedSalary())
+                .properties(user.getProperties())
+                .build();
     }
 }
