@@ -35,7 +35,7 @@ public class MonthClosureService {
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
     public void runMonthClosures() {
         var today = LocalDate.now();
-        userRepository.findAllUsersWithMonthClosureToday(String.valueOf(today.getDayOfMonth()))
+        userRepository.findAllUsersWithMonthClosureTodayAndWithoutMonthClosuresOnMonthAndYear(String.valueOf(today.getDayOfMonth()), today.getMonth().name().substring(0, 3), today.getYear())
                 .parallelStream()
                 .forEach(this::calculateFinances);
     }

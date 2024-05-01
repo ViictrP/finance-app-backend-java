@@ -9,7 +9,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class RecurringExpenseDTO extends BaseDTO {
-  @NotBlank(message = "The user ID is required")
   private String userId;
 
   @NotBlank(message = "The description is required")

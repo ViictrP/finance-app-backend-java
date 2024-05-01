@@ -15,8 +15,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(value = """
             select u.*
-            from finance_app_user u
-                      inner join user_property up on u.id = up.user_id
-            where up.property_name = 'MONTH_CLOSURE_DAY' and up.property_value = :dayOfTheMonth""", nativeQuery = true)
-    List<User> findAllUsersWithMonthClosureToday(@Param("dayOfTheMonth") String dayOfTheMonth);
+            from finance_app.finance_app_user u
+                     inner join finance_app.user_property up on u.id = up.user_id
+            where up.property_name = 'MONTH_CLOSURE_DAY'
+              and up.property_value = :dayOfTheMonth
+              and u.id not in (select user_id from finance_app.month_closure m where m.month = :month and m.year = :year)""", nativeQuery = true)
+    List<User> findAllUsersWithMonthClosureTodayAndWithoutMonthClosuresOnMonthAndYear(@Param("dayOfTheMonth") String dayOfTheMonth,
+                                                 @Param("month") String month,
+                                                 @Param("year") Integer year);
 }
