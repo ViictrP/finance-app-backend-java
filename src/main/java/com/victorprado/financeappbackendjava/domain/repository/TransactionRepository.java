@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
   List<Transaction> findByUserIdAndInvoiceIsNullAndDateIsBetween(Long userId, LocalDateTime from, LocalDateTime to);
+  List<Transaction> findAllByInstallmentId(String installmentId);
 }

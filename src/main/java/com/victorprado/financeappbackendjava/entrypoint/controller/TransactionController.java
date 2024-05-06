@@ -30,9 +30,9 @@ public class TransactionController {
     }
 
     @DeleteMapping("/{transactionId}")
-    public ResponseEntity<Void> delete(@PathVariable Long transactionId) {
+    public ResponseEntity<Void> delete(@PathVariable Long transactionId, @RequestParam("all") Boolean all) {
         log.info("Delete transaction {} request received", transactionId);
-        service.delete(transactionId);
+        service.delete(transactionId, all);
         log.info("Transaction {} deleted!", transactionId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

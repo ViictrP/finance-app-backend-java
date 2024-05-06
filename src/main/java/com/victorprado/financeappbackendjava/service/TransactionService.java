@@ -60,10 +60,17 @@ public class TransactionService {
     }
 
     @Transactional
-    public void delete(Long transactionId) {
+    public void delete(Long transactionId, Boolean deleteAll) {
         log.info("Loading the transaction {} data", transactionId);
         var transaction = repository.findById(transactionId)
                 .orElseThrow(TransactionNotFoundException::new);
+
+        if (deleteAll) {
+            repository.findAllByInstallmentId(transaction.getInstallmentId())
+                    .stream().peek(Transaction::delete)
+                    .parallel().forEach(repository::save);
+            return;
+        }
 
         transaction.delete();
         repository.save(transaction);
