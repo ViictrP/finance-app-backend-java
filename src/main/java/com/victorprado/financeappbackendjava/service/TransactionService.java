@@ -32,6 +32,8 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class TransactionService {
 
+    private static final Integer NUMBER_OF_MONTHS_IN_YEAR = 12;
+
     private final TransactionRepository repository;
     private final InvoiceRepository invoiceRepository;
     private final CreditCardRepository creditCardRepository;
@@ -121,9 +123,9 @@ public class TransactionService {
             monthIndex++;
         }
 
-        if (monthIndex > 12) {
+        if (monthIndex > NUMBER_OF_MONTHS_IN_YEAR) {
             year++;
-            monthIndex = 1;
+            monthIndex = monthIndex - NUMBER_OF_MONTHS_IN_YEAR;
         }
 
         var newDate = LocalDate.of(year, monthIndex, day);
