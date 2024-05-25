@@ -16,7 +16,6 @@ import java.net.URI;
 @RestController
 @RequestMapping("/v1/recurring-expenses")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class RecurringExpenseController {
 
     private final RecurringExpenseService service;
