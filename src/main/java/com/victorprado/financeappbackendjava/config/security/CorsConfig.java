@@ -18,7 +18,7 @@ public class CorsConfig {
         final var config = new CorsConfiguration();
         config.setAllowCredentials(true);
 
-        config.setAllowedOrigins(Collections.singletonList("https://app.financeapp.dev/"));
+        config.setAllowedOrigins(Collections.singletonList("https://app.financeapp.dev"));
         config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"));
         source.registerCorsConfiguration("/**", config);
