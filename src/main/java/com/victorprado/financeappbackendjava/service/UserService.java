@@ -107,7 +107,7 @@ public class UserService {
 
         var currentMonthClosure = user.getMonthClosures()
                 .stream()
-                .filter(m -> today.getMonth().toString().equals(m.getMonth()) && today.getYear() == m.getYear())
+                .filter(m -> month.name().equals(m.getMonth()) && year == m.getYear())
                 .findFirst();
 
         var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(user.getId(), month.name(), year);
