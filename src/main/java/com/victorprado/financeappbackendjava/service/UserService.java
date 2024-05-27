@@ -104,6 +104,12 @@ public class UserService {
         var today = LocalDate.now();
         var month = criteria.getMonth() != null ? MonthEnum.getMonth(criteria.getMonth()) : MonthEnum.getMonth(today.getMonthValue());
         var year = criteria.getYear() != null ? criteria.getYear() : today.getYear();
+
+        var currentMonthClosure = user.getMonthClosures()
+                .stream()
+                .filter(m -> today.getMonth().toString().equals(m.getMonth()) && today.getYear() == m.getYear())
+                .findFirst();
+
         var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(user.getId(), month.name(), year);
 
         final var creditCardsTotal = new BigDecimal[]{BigDecimal.ZERO};
@@ -143,7 +149,12 @@ public class UserService {
                 .reduce(BigDecimal::add)
                 .orElse(BigDecimal.ZERO);
 
-        var expenses = creditCardsTotal[0].add(transactionsTotal).add(recurringExpensesTotal);
+        BigDecimal expenses;
+        if (currentMonthClosure.isPresent()) {
+            expenses = currentMonthClosure.get().getExpenses();
+        } else {
+            expenses = creditCardsTotal[0].add(transactionsTotal).add(recurringExpensesTotal);
+        }
 
         return UserBalanceDTO.builder()
                 .expenses(expenses)
