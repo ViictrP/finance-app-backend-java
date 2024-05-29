@@ -175,7 +175,7 @@ public class UserService {
                 .orElseThrow(() -> new CoreException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
-    private void executeCurrencyExchange(User user, Optional<MonthClosure> withMonthClosure) {
+    public void executeCurrencyExchange(User user, Optional<MonthClosure> withMonthClosure) {
         var mustDoConversion = user.getProperty(CURRENCY_CONVERSION);
 
         if (parseBoolean(mustDoConversion)) {
@@ -192,6 +192,7 @@ public class UserService {
             }
 
 
+            user.getProperties().put(DOLLAR_COTATION.name(), usdToBrl.toString());
             var grossSalary = usdToBrl.multiply(user.getSalary());
             user.setNonConvertedSalary(user.getSalary());
 

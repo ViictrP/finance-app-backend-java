@@ -1,11 +1,11 @@
 package com.victorprado.financeappbackendjava.service.schedule;
 
-import com.victorprado.financeappbackendjava.client.CurrencyAPI;
 import com.victorprado.financeappbackendjava.domain.entity.*;
 import com.victorprado.financeappbackendjava.domain.repository.InvoiceRepository;
 import com.victorprado.financeappbackendjava.domain.repository.MonthClosureRepository;
 import com.victorprado.financeappbackendjava.domain.repository.TransactionRepository;
 import com.victorprado.financeappbackendjava.domain.repository.UserRepository;
+import com.victorprado.financeappbackendjava.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,11 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static com.victorprado.financeappbackendjava.client.enums.Context.USDBRL;
-import static com.victorprado.financeappbackendjava.domain.enums.UserProperty.CURRENCY_CONVERSION_TYPE;
+import static com.victorprado.financeappbackendjava.domain.enums.UserProperty.DOLLAR_COTATION;
 import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 
@@ -35,7 +34,7 @@ public class MonthClosureService {
     private final TransactionRepository transactionRepository;
     private final MonthClosureRepository repository;
 
-    private final CurrencyAPI currencyAPI;
+    private final UserService userService;
 
     @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
@@ -83,6 +82,8 @@ public class MonthClosureService {
 
         var total = totalInvoiceTransactions.add(totalRecurringExpenses).add(totalTransactions);
 
+        userService.executeCurrencyExchange(user, Optional.empty());
+
         var monthClosure = MonthClosure.builder()
                 .month(today.getMonth().name().substring(0, 3))
                 .year(today.getYear())
@@ -90,16 +91,9 @@ public class MonthClosureService {
                 .total(user.getSalary())
                 .expenses(total)
                 .available(user.getSalary().subtract(total))
+                .finalUsdToBRL(new BigDecimal(user.getProperty(DOLLAR_COTATION)))
                 .user(user)
                 .build();
-
-        var exchangeType = user.getProperty(CURRENCY_CONVERSION_TYPE);
-        var exchangeRate = currencyAPI.getDollarExchangeRates(exchangeType);
-        var usdToBrl = (Map<String, String>) exchangeRate.getBody().get(USDBRL.getType());
-
-        if (usdToBrl != null) {
-            monthClosure.setFinalUsdToBRL(new BigDecimal(usdToBrl.get("ask")));
-        }
 
         repository.save(monthClosure);
     }
