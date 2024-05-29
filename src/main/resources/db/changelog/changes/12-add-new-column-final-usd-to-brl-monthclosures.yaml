@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 12
+      author: Victor
+      changes:
+        - addColumn:
+            tableName: month_closure
+            columns:
+              - column:
+                  name: final_usd_to_brl
+                  type: Decimal
+                  constraints:
+                    nullable: true

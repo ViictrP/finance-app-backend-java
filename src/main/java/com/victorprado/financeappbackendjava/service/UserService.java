@@ -1,6 +1,7 @@
 package com.victorprado.financeappbackendjava.service;
 
 import com.victorprado.financeappbackendjava.client.CurrencyAPI;
+import com.victorprado.financeappbackendjava.domain.entity.MonthClosure;
 import com.victorprado.financeappbackendjava.domain.entity.RecurringExpense;
 import com.victorprado.financeappbackendjava.domain.entity.Transaction;
 import com.victorprado.financeappbackendjava.domain.entity.User;
@@ -25,6 +26,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.victorprado.financeappbackendjava.client.enums.Context.USDBRL;
 import static com.victorprado.financeappbackendjava.domain.enums.UserProperty.*;
@@ -53,13 +55,10 @@ public class UserService {
 
     @Cacheable(cacheNames = "get_user_profile_cache")
     public UserDTO getUser(ProfileCriteria criteria) {
-        var user = loadUser();
-
-        log.info("Getting credit cards and transactions of the user [user: {}]", user.getEmail());
+        log.info("Getting credit cards and transactions of the user [user: {}]", SecurityContext.getUserEmail());
         var today = LocalDate.now();
         var month = criteria.getMonth() != null ? MonthEnum.getMonth(criteria.getMonth()) : MonthEnum.getMonth(today.getMonthValue());
         var year = criteria.getYear() != null ? criteria.getYear() : today.getYear();
-        var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(user.getId(), month.name(), year);
 
         var from = today
                 .withYear(year)
@@ -72,10 +71,11 @@ public class UserService {
                 .with(lastDayOfMonth())
                 .atTime(23, 59, 59);
 
-        var transactions = transactionRepository.findByUserIdAndInvoiceIsNullAndDateIsBetween(user.getId(),
-                from, to);
+        var currentMonthClosure = monthClosureRepository.findByMonthAndYearAndUser_Email(month.name(), today.getYear(), SecurityContext.getUserEmail());
+        var user = loadUser(currentMonthClosure);
+        var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(user.getId(), month.name(), year);
+        var transactions = transactionRepository.findByUserIdAndInvoiceIsNullAndDateIsBetween(user.getId(), from, to);
         var recurringExpenses = recurringExpenseRepository.findByUserId(user.getId());
-
         var monthClosures = monthClosureRepository.findLastFiveByYear(user, today.getYear());
 
         log.info("Building user object with all fetched data [user: {}]", user.getEmail());
@@ -98,18 +98,13 @@ public class UserService {
 
     @Cacheable(cacheNames = "get_user_balance_cache")
     public UserBalanceDTO getUserBalance(ProfileCriteria criteria) {
-        var user = loadUser();
-
-        log.info("Getting logged user's credit cards and transactions [user: {}]", user.getEmail());
+        log.info("Getting logged user's credit cards and transactions [user: {}]", SecurityContext.getUserEmail());
         var today = LocalDate.now();
         var month = criteria.getMonth() != null ? MonthEnum.getMonth(criteria.getMonth()) : MonthEnum.getMonth(today.getMonthValue());
         var year = criteria.getYear() != null ? criteria.getYear() : today.getYear();
 
-        var currentMonthClosure = user.getMonthClosures()
-                .stream()
-                .filter(m -> month.name().equals(m.getMonth()) && year == m.getYear())
-                .findFirst();
-
+        var currentMonthClosure = monthClosureRepository.findByMonthAndYearAndUser_Email(month.name(), today.getYear(), SecurityContext.getUserEmail());
+        var user = loadUser(currentMonthClosure);
         var creditCards = creditCardRepository.findByUserAndInvoicesByMonthAndYear(user.getId(), month.name(), year);
 
         final var creditCardsTotal = new BigDecimal[]{BigDecimal.ZERO};
@@ -170,45 +165,52 @@ public class UserService {
                 .build();
     }
 
-    private User loadUser() {
+    private User loadUser(Optional<MonthClosure> withMonthClosure) {
         log.info("Loading user data [user: {}]", SecurityContext.getUserEmail());
         return repository.findByEmail(SecurityContext.getUserEmail())
                 .map(u -> {
-                    executeCurrencyExchange(u);
+                    executeCurrencyExchange(u, withMonthClosure);
                     return u;
                 })
                 .orElseThrow(() -> new CoreException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
-    private void executeCurrencyExchange(User user) {
+    public void executeCurrencyExchange(User user, Optional<MonthClosure> withMonthClosure) {
         var mustDoConversion = user.getProperty(CURRENCY_CONVERSION);
 
         if (parseBoolean(mustDoConversion)) {
             var exchangeType = user.getProperty(CURRENCY_CONVERSION_TYPE);
-            var exchangeRate = currencyAPI.getDollarExchangeRates(exchangeType);
-            var usdToBrl = (Map<String, String>) exchangeRate.getBody().get(USDBRL.getType());
 
-            if (usdToBrl != null) {
-                var exchangeValue = new BigDecimal(usdToBrl.get("ask"));
-                var grossSalary = exchangeValue.multiply(user.getSalary());
-                user.setNonConvertedSalary(user.getSalary());
+            BigDecimal usdToBrl = BigDecimal.ONE;
 
-                if (user.getProperty(CURRENCY_CONVERSION_TAX) != null) {
-                    var currencyConversionTax = new BigDecimal(user.getProperty(CURRENCY_CONVERSION_TAX));
-                    var conversionValue = grossSalary.multiply(currencyConversionTax);
-                    grossSalary = grossSalary.subtract(conversionValue);
-                    user.setExchangeTaxValue(conversionValue);
-                }
-
-                if (user.getProperty(SALARY_TAX) != null) {
-                    var salaryTax = new BigDecimal(user.getProperty(SALARY_TAX));
-                    var taxValue = grossSalary.multiply(salaryTax);
-                    grossSalary = grossSalary.subtract(grossSalary.multiply(salaryTax));
-                    user.setTaxValue(taxValue);
-                }
-
-                user.setSalary(grossSalary);
+            if (withMonthClosure.isPresent()) {
+                usdToBrl = withMonthClosure.get().getFinalUsdToBRL();
+            } else {
+                var exchangeRate = currencyAPI.getDollarExchangeRates(exchangeType);
+                var  _usdToBrl = (Map<String, String>) exchangeRate.getBody().get(USDBRL.getType());
+                usdToBrl = _usdToBrl != null ? new BigDecimal(_usdToBrl.get("ask")) : BigDecimal.ONE;
             }
+
+
+            user.getProperties().put(DOLLAR_COTATION.name(), usdToBrl.toString());
+            var grossSalary = usdToBrl.multiply(user.getSalary());
+            user.setNonConvertedSalary(user.getSalary());
+
+            if (user.getProperty(CURRENCY_CONVERSION_TAX) != null) {
+                var currencyConversionTax = new BigDecimal(user.getProperty(CURRENCY_CONVERSION_TAX));
+                var conversionValue = grossSalary.multiply(currencyConversionTax);
+                grossSalary = grossSalary.subtract(conversionValue);
+                user.setExchangeTaxValue(conversionValue);
+            }
+
+            if (user.getProperty(SALARY_TAX) != null) {
+                var salaryTax = new BigDecimal(user.getProperty(SALARY_TAX));
+                var taxValue = grossSalary.multiply(salaryTax);
+                grossSalary = grossSalary.subtract(grossSalary.multiply(salaryTax));
+                user.setTaxValue(taxValue);
+            }
+
+            user.setSalary(grossSalary);
         }
     }
 
@@ -239,7 +241,7 @@ public class UserService {
 
     @Transactional
     public UserDTO update(UpdateProfileDTO profile) {
-        log.info("Loading user data [user: {}]", SecurityContext.getUserEmail());
+        log.info("Loading user's data [user: {}]", SecurityContext.getUserEmail());
         var user = repository.findByEmail(SecurityContext.getUserEmail())
                 .orElseThrow(() -> new CoreException(HttpStatus.NOT_FOUND, "User not found"));
 
