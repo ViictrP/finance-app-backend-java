@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
                      inner join finance_app.user_property up on u.id = up.user_id
             where up.property_name = 'MONTH_CLOSURE_DAY'
               and up.property_value = :dayOfTheMonth
-              and u.id not in (select user_id from finance_app.month_closure m where m.month = :month and m.year = :year)""", nativeQuery = true)
+              and u.id not in (select user_id from finance_app.month_closure m where m.month = :month and m.year = :year and m.deleted is false)""", nativeQuery = true)
     List<User> findAllUsersWithMonthClosureTodayAndWithoutMonthClosuresOnMonthAndYear(@Param("dayOfTheMonth") String dayOfTheMonth,
                                                  @Param("month") String month,
                                                  @Param("year") Integer year);
