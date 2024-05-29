@@ -1,5 +1,6 @@
 package com.victorprado.financeappbackendjava.service.schedule;
 
+import com.victorprado.financeappbackendjava.client.CurrencyAPI;
 import com.victorprado.financeappbackendjava.domain.entity.*;
 import com.victorprado.financeappbackendjava.domain.repository.InvoiceRepository;
 import com.victorprado.financeappbackendjava.domain.repository.MonthClosureRepository;
@@ -15,8 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static com.victorprado.financeappbackendjava.client.enums.Context.USDBRL;
+import static com.victorprado.financeappbackendjava.domain.enums.UserProperty.CURRENCY_CONVERSION_TYPE;
 import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 
@@ -30,6 +34,8 @@ public class MonthClosureService {
     private final InvoiceRepository invoiceRepository;
     private final TransactionRepository transactionRepository;
     private final MonthClosureRepository repository;
+
+    private final CurrencyAPI currencyAPI;
 
     @Scheduled(fixedRate = 1, timeUnit = TimeUnit.DAYS)
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
@@ -86,6 +92,14 @@ public class MonthClosureService {
                 .available(user.getSalary().subtract(total))
                 .user(user)
                 .build();
+
+        var exchangeType = user.getProperty(CURRENCY_CONVERSION_TYPE);
+        var exchangeRate = currencyAPI.getDollarExchangeRates(exchangeType);
+        var usdToBrl = (Map<String, String>) exchangeRate.getBody().get(USDBRL.getType());
+
+        if (usdToBrl != null) {
+            monthClosure.setFinalUsdToBRL(new BigDecimal(usdToBrl.get("ask")));
+        }
 
         repository.save(monthClosure);
     }
