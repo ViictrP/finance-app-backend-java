@@ -5,6 +5,9 @@ name: Build - finance-app-backend-java
 
 on:
   pull_request:
+    types:
+      - opened
+      - reopened
     branches:
       - develop
   push:
