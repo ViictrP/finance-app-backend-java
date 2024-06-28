@@ -47,6 +47,7 @@ public class MonthClosureService {
 
     protected void calculateFinances(User user) {
         var today = LocalDate.now();
+        log.info("Running Month Closures for {}", today);
         var monthName = today.getMonth().name().substring(0, 3);
         var invoices = invoiceRepository.findByMonthAndYearAndCreditCardIn(monthName, today.getYear(), user.getCreditCards());
 
