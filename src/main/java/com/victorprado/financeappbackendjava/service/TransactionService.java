@@ -5,8 +5,8 @@ import com.victorprado.financeappbackendjava.domain.entity.Invoice;
 import com.victorprado.financeappbackendjava.domain.entity.Transaction;
 import com.victorprado.financeappbackendjava.domain.entity.User;
 import com.victorprado.financeappbackendjava.domain.exception.CreditCardNotFoundException;
-import com.victorprado.financeappbackendjava.domain.exception.UserNotFoundException;
 import com.victorprado.financeappbackendjava.domain.exception.TransactionNotFoundException;
+import com.victorprado.financeappbackendjava.domain.exception.UserNotFoundException;
 import com.victorprado.financeappbackendjava.domain.repository.CreditCardRepository;
 import com.victorprado.financeappbackendjava.domain.repository.InvoiceRepository;
 import com.victorprado.financeappbackendjava.domain.repository.TransactionRepository;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -128,7 +128,8 @@ public class TransactionService {
             monthIndex = monthIndex - NUMBER_OF_MONTHS_IN_YEAR;
         }
 
-        var newDate = LocalDate.of(year, monthIndex, day);
+        var yearMonth = YearMonth.of(year, monthIndex);
+        var newDate = LocalDate.of(year, monthIndex, Math.min(day, yearMonth.lengthOfMonth()));
         var nextMonth = newDate.getMonth().name().substring(0, 3);
 
         var invoice = invoiceRepository
