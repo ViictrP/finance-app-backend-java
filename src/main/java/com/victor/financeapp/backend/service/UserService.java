@@ -180,13 +180,13 @@ public class UserService {
         if (parseBoolean(mustDoConversion)) {
             var exchangeType = user.getProperty(CURRENCY_CONVERSION_TYPE);
 
-            BigDecimal usdToBrl = BigDecimal.ONE;
+            BigDecimal usdToBrl;
 
             if (withMonthClosure.isPresent()) {
                 usdToBrl = withMonthClosure.get().getFinalUsdToBRL();
             } else {
                 var exchangeRate = currencyAPI.getDollarExchangeRates(exchangeType);
-                var  _usdToBrl = (Map<String, String>) exchangeRate.getBody().get(USDBRL.getType());
+                var  _usdToBrl = (Map<String, String>) exchangeRate.get(USDBRL.getType());
                 usdToBrl = _usdToBrl != null ? new BigDecimal(_usdToBrl.get("ask")) : BigDecimal.ONE;
             }
 

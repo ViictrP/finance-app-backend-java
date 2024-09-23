@@ -1,15 +1,34 @@
 package com.victor.financeapp.backend.client;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
-@FeignClient(name = "CURRENCY", url = "${CURRENCY.url}")
-public interface CurrencyAPI {
+@Component
+@RequiredArgsConstructor
+public class CurrencyAPI {
 
-    @GetMapping("/{currencyTypes}")
-    ResponseEntity<Map<String, Object>> getDollarExchangeRates(@PathVariable String currencyTypes);
+    private final WebClient webClient;
+
+    @Value("${CURRENCY.url}")
+    private String currencyUrl;
+
+    public Map<String, Object> getDollarExchangeRates(String currencyTypes) {
+        return webClient.
+                get()
+                .uri(currencyUrl + "/" + currencyTypes)
+                .retrieve()
+                .onStatus(
+                    HttpStatusCode::is4xxClientError,
+                    clientResponse -> Mono.error(new RuntimeException("Erro ao chamar API"))
+                )
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                .block();
+    }
 }
