@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: 7
+      author: Victor
+      changes:
+        - addColumn:
+            tableName: finance_app_user
+            columns:
+              - column:
+                  name: external_id
+                  type: varchar(255)
+
+        - addColumn:
+            tableName: credit_card
+            columns:
+              - column:
+                  name: external_id
+                  type: varchar(255)
+
+        - addColumn:
+            tableName: invoice
+            columns:
+              - column:
+                  name: external_id
+                  type: varchar(255)
+
+        - addColumn:
+            tableName: transaction
+            columns:
+              - column:
+                  name: external_id
+                  type: varchar(255)
+
+        - addColumn:
+            tableName: recurring_expense
+            columns:
+              - column:
+                  name: external_id
+                  type: varchar(255)
