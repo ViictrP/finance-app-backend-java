@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -55,7 +56,9 @@ public class TransactionService {
             return createInvoiceTransaction(dto, creditCard, user);
         }
 
+        var now = LocalDateTime.now();
         var entity = mapper.toEntity(dto);
+        entity.setDate(entity.getDate().withHour(now.getHour()).withMinute(now.getMinute()).withSecond(now.getSecond()));
         entity.setUser(user);
         var saved = repository.save(entity);
         return mapper.toDTO(saved);
@@ -87,11 +90,12 @@ public class TransactionService {
         var transactionAmount = dto.getAmount().divide(BigDecimal.valueOf(dto.getInstallmentAmount()), RoundingMode.FLOOR);
         dto.setAmount(transactionAmount);
 
+        var now = LocalDateTime.now();
         var monthIndex = dto.getDate().getMonthValue();
 
         for (var i = 0; i < dto.getInstallmentAmount(); i++) {
             var newTransaction = new Transaction();
-            newTransaction.setDate(dto.getDate());
+            newTransaction.setDate(dto.getDate().withHour(now.getHour()).withMinute(now.getMinute()).withSecond(now.getSecond()));
             newTransaction.setAmount(dto.getAmount());
             newTransaction.setCategory(dto.getCategory());
             newTransaction.setUser(user);
