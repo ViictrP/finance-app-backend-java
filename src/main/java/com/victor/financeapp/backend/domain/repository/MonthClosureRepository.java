@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface MonthClosureRepository extends JpaRepository<MonthClosure, Long> {
 
-    @Query("select m from MonthClosure m where m.user = :user and m.year = :year order by m.index limit 5")
+    @Query("select m from MonthClosure m where m.user = :user and m.year = :year order by m.index desc limit 5")
     List<MonthClosure> findLastFiveByYear(User user, Integer year);
 
     Optional<MonthClosure> findByMonthAndYearAndUser_Email(String month, Integer year, String email);
