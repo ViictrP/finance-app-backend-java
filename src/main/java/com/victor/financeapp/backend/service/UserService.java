@@ -6,10 +6,18 @@ import com.victor.financeapp.backend.domain.entity.RecurringExpense;
 import com.victor.financeapp.backend.domain.entity.Transaction;
 import com.victor.financeapp.backend.domain.entity.User;
 import com.victor.financeapp.backend.domain.enums.MonthEnum;
-import com.victor.financeapp.backend.domain.exception.CoreException;
-import com.victor.financeapp.backend.domain.repository.*;
+import com.victor.financeapp.backend.domain.exception.UserNotFoundException;
+import com.victor.financeapp.backend.domain.repository.CreditCardRepository;
+import com.victor.financeapp.backend.domain.repository.MonthClosureRepository;
+import com.victor.financeapp.backend.domain.repository.RecurringExpenseRepository;
+import com.victor.financeapp.backend.domain.repository.TransactionRepository;
+import com.victor.financeapp.backend.domain.repository.UserRepository;
 import com.victor.financeapp.backend.service.context.SecurityContext;
-import com.victor.financeapp.backend.service.dto.*;
+import com.victor.financeapp.backend.service.dto.ProfileCriteria;
+import com.victor.financeapp.backend.service.dto.ProfileDTO;
+import com.victor.financeapp.backend.service.dto.UpdateProfileDTO;
+import com.victor.financeapp.backend.service.dto.UserBalanceDTO;
+import com.victor.financeapp.backend.service.dto.UserDTO;
 import com.victor.financeapp.backend.service.mapper.CreditCardMapper;
 import com.victor.financeapp.backend.service.mapper.MonthClosureMapper;
 import com.victor.financeapp.backend.service.mapper.RecurringExpenseMapper;
@@ -17,7 +25,6 @@ import com.victor.financeapp.backend.service.mapper.TransactionMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +35,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.victor.financeapp.backend.client.enums.Context.USDBRL;
-import static com.victor.financeapp.backend.domain.enums.UserProperty.*;
+import static com.victor.financeapp.backend.domain.enums.UserProperty.CURRENCY_CONVERSION;
+import static com.victor.financeapp.backend.domain.enums.UserProperty.CURRENCY_CONVERSION_TAX;
+import static com.victor.financeapp.backend.domain.enums.UserProperty.CURRENCY_CONVERSION_TYPE;
+import static com.victor.financeapp.backend.domain.enums.UserProperty.DOLLAR_COTATION;
+import static com.victor.financeapp.backend.domain.enums.UserProperty.SALARY_TAX;
 import static java.lang.Boolean.parseBoolean;
 import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
@@ -171,7 +182,7 @@ public class UserService {
                     executeCurrencyExchange(u, withMonthClosure);
                     return u;
                 })
-                .orElseThrow(() -> new CoreException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     public void executeCurrencyExchange(User user, Optional<MonthClosure> withMonthClosure) {
@@ -242,7 +253,7 @@ public class UserService {
     public UserDTO update(UpdateProfileDTO profile) {
         log.info("Loading user's data [user: {}]", SecurityContext.getUserEmail());
         var user = repository.findByEmail(SecurityContext.getUserEmail())
-                .orElseThrow(() -> new CoreException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(UserNotFoundException::new);
 
         user.setProperties(profile.getProperties());
 
