@@ -47,10 +47,14 @@ public class MonthClosureService {
     }
 
     protected void calculateFinances(User user) {
+        log.info("Calculating finances for user {}", user.getName());
         var today = LocalDate.now();
         var monthName = today.getMonth().name().substring(0, 3);
+
+        log.info("Loading user {}'s invoices", user.getName());
         var invoices = invoiceRepository.findByMonthAndYearAndCreditCardIn(monthName, today.getYear(), user.getCreditCards());
 
+        log.info("Processing user {}'s data", user.getName());
         var totalInvoiceTransactions = invoices.stream()
                 .map(Invoice::getTransactions)
                 .flatMap(Collection::stream)
@@ -83,8 +87,10 @@ public class MonthClosureService {
 
         var total = totalInvoiceTransactions.add(totalRecurringExpenses).add(totalTransactions);
 
+        log.info("Loading dollar cotation for {}", today);
         userService.executeCurrencyExchange(user, Optional.empty());
 
+        log.info("Building the response for user {}'s month clojure", user.getName());
         var monthClosure = MonthClosure.builder()
                 .month(today.getMonth().name().substring(0, 3))
                 .year(today.getYear())
@@ -96,6 +102,7 @@ public class MonthClosureService {
                 .user(user)
                 .build();
 
+        log.info("Saving user {}'s data", user.getName());
         repository.save(monthClosure);
     }
 }
